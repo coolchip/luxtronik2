@@ -1,0 +1,32 @@
+{
+  "name": "luxtronik2",
+  "version": "0.0.1",
+  "description": "Reads and controls heat pumps based on the Luxtronik 2.0 contol unit. Supports for example AlphaInnotec and Siemens Novelan (WRP NET).",
+  "main": "luxtronik.js",
+  "dependencies": {
+    "humanize-duration": "^3.10.0",
+    "net": "^1.0.2",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node example.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coolchip/luxtronik2.git"
+  },
+  "keywords": [
+    "luxtronik",
+    "luxtronik2",
+    "alpha",
+    "innotec",
+    "novelan"
+  ],
+  "author": "Sebastian B.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/coolchip/luxtronik2/issues"
+  },
+  "homepage": "https://github.com/coolchip/luxtronik2#readme"
+}
