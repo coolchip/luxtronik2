@@ -1,6 +1,7 @@
 Luxtronik2
 ==========
 [![npm version](https://badge.fury.io/js/luxtronik2.svg)](https://badge.fury.io/js/luxtronik2)
+[![Build Status](https://travis-ci.org/coolchip/luxtronik2.svg?branch=master)](https://travis-ci.org/coolchip/luxtronik2)
 ### Luxtronik2 reads and controls heat pumps based on the Luxtronik 2.0 contol unit with **Node.js**.
 
 This work based on the fantastic [FHEM module 'LUXTRONIK2'](https://wiki.fhem.de/wiki/Luxtronik_2.0), the very usefull [openHAB binding 'Novelan Luxtronic heat pump'](
