@@ -4,6 +4,8 @@ Luxtronik2
 [![Build Status](https://travis-ci.org/coolchip/luxtronik2.svg?branch=master)](https://travis-ci.org/coolchip/luxtronik2)
 [![Dependency Status](https://david-dm.org/coolchip/luxtronik2.svg)](https://david-dm.org/coolchip/luxtronik2)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d690e37c0ea94e8f99f1b1e36cd06687)](https://www.codacy.com/app/coolchip/luxtronik2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=coolchip/luxtronik2&amp;utm_campaign=Badge_Grade)
+[![Code Climate](https://codeclimate.com/github/coolchip/luxtronik2/badges/gpa.svg)](https://codeclimate.com/github/coolchip/luxtronik2)
+[![Test Coverage](https://codeclimate.com/github/coolchip/luxtronik2/badges/coverage.svg)](https://codeclimate.com/github/coolchip/luxtronik2/coverage)
 [![npm](https://img.shields.io/npm/l/express.svg)](https://www.npmjs.com/package/luxtronik2)
 ### Luxtronik2 reads and controls heat pumps based on the Luxtronik 2.0 contol unit with **Node.js**.
 
