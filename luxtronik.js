@@ -136,8 +136,17 @@ function getOpStateHotWater(values) {
 }
 
 
-function getLogLine(time, value) {
-    return new Date(time * 1000).toString() + " - " + value;
+function generateLogLine(time, msg) {
+    return new Date(time * 1000).toString() + " - " + msg;
+}
+
+
+function generateLogList(timeArray, msgArray) {
+    var logArray = [];
+    for (var i = 0; i < timeArray.length; i++) {
+        logArray.push(generateLogLine(timeArray[i], msgArray[i]));
+    }
+    return logArray;
 }
 
 
@@ -152,13 +161,20 @@ function toInt32ArrayReadBE(buffer) {
 
 function processData() {
     var payload = {};
-    const heatpumpParameters = toInt32ArrayReadBE(this.receivy["3003"].payload);
-    const heatpumpValues = toInt32ArrayReadBE(this.receivy["3004"].payload);
-    const heatpumpVisibility = this.receivy["3005"].payload;
+    const heatpumpParameters = toInt32ArrayReadBE(receivy["3003"].payload);
+    const heatpumpValues = toInt32ArrayReadBE(receivy["3004"].payload);
+    const heatpumpVisibility = receivy["3005"].payload;
 
-    if (heatpumpParameters !== undefined &&
-        heatpumpValues !== undefined &&
-        heatpumpVisibility !== undefined) {
+    if (heatpumpParameters === undefined ||
+        heatpumpValues === undefined ||
+        heatpumpVisibility === undefined) {
+
+        payload = {
+            additional: {
+                error: "Unexpected Data"
+            }
+        };
+    } else {
 
         if (receivy.rawdata) {
             payload = {
@@ -262,23 +278,11 @@ function processData() {
                     "Add_Broadcast": int2ip(heatpumpValues[93]),
                     "Add_StdGateway": int2ip(heatpumpValues[94]),
 
-                    "errors": [
-                        getLogLine(heatpumpValues[95], heatpumpValues[100]), // #42
-                        getLogLine(heatpumpValues[96], heatpumpValues[101]),
-                        getLogLine(heatpumpValues[97], heatpumpValues[102]),
-                        getLogLine(heatpumpValues[98], heatpumpValues[103]),
-                        getLogLine(heatpumpValues[99], heatpumpValues[104]),
-                    ],
+                    "errors": generateLogList(heatpumpValues.slice(95, 100), heatpumpValues.slice(100, 105)), // #42 Time of first error
 
                     "error_count": heatpumpValues[105],
 
-                    "switch_off": [
-                        getLogLine(heatpumpValues[111], heatpumpValues[106]),
-                        getLogLine(heatpumpValues[112], heatpumpValues[107]),
-                        getLogLine(heatpumpValues[113], heatpumpValues[108]),
-                        getLogLine(heatpumpValues[114], heatpumpValues[109]),
-                        getLogLine(heatpumpValues[115], heatpumpValues[110]),
-                    ],
+                    "switch_off": generateLogList(heatpumpValues.slice(111, 116), heatpumpValues.slice(106, 111)),
 
                     "Comfort_exists": heatpumpValues[116],
 
@@ -459,10 +463,16 @@ function processData() {
 }
 
 
-luxtronik.prototype.receivy = {};
+receivy = {};
+client = null;
 
 
-luxtronik.prototype.client = null;
+function writeCommand(command) {
+    const buffer = Buffer.allocUnsafe(8);
+    buffer.writeInt32BE(command, 0);
+    buffer.writeInt32BE(0, 4);
+    client.write(buffer);
+}
 
 
 function nextJob() {
@@ -478,14 +488,6 @@ function nextJob() {
 }
 
 
-function writeCommand(command) {
-    const buffer = Buffer.allocUnsafe(8);
-    buffer.writeInt32BE(command, 0);
-    buffer.writeInt32BE(0, 4);
-    client.write(buffer);
-}
-
-
 function startRead(host, port, rawdata, callback) {
     client = new net.Socket();
     client.connect(port, host, function () {
@@ -495,8 +497,8 @@ function startRead(host, port, rawdata, callback) {
             jobs: [3003, 3004, 3005],
             activeCommand: 0,
             readingStartTime: Date.now(),
-            rawdata: rawdata,
-            callback: callback
+            rawdata,
+            callback
         };
         process.nextTick(nextJob);
     });
@@ -535,7 +537,7 @@ function startRead(host, port, rawdata, callback) {
             receivy.activeCommand = commandEcho;
             receivy[commandEcho] = {
                 remaining: dataCount - payload.length,
-                payload: payload
+                payload
             };
         } else {
             receivy[receivy.activeCommand] = {
@@ -556,34 +558,44 @@ function startRead(host, port, rawdata, callback) {
 }
 
 
+function value2SetValue(realValue) {
+    // Allow only integer temperature or with decimal .5
+    return parseInt(realValue * 2, 10) * 5;
+}
+
+
 function startWrite(host, port, parameterName, realValue) {
     var setParameter = 0;
     var setValue = 0;
 
     if (parameterName === "heating_target_temperature") {
         setParameter = 1;
-        if (realValue < -10) realValue = -10;
-        if (realValue > 10) realValue = +10;
-        // Allow only integer temperature or with decimal .5
-        setValue = parseInt(realValue * 2, 10) * 5;
-        realValue = setValue / 10;
+        if (realValue < -10) {
+            realValue = -10;
+        }
+        if (realValue > 10) {
+            realValue = +10;
+        }
+        setValue = value2SetValue(realValue);
     } else if (parameterName === "warmwater_target_temperaure") {
         setParameter = 2;
-        if (realValue < 30) realValue = 30;
-        if (realValue > 65) realValue = 65;
-        // Allow only integer temperature or with decimal .5
-        setValue = parseInt(realValue * 2, 10) * 5;
-        realValue = setValue / 10;
+        if (realValue < 30) {
+            realValue = 30;
+        }
+        if (realValue > 65) {
+            realValue = 65;
+        }
+        setValue = value2SetValue(realValue);
     } else if (parameterName === "heating_operation_mode") {
         if (!types.hpMode.hasOwnProperty(realValue.toString())) {
-            winston.log("error", "Wrong parameter given for opModeHotWater, use Automatik,Party,Off");
+            winston.log("error", "Wrong parameter given for heating_operation_mode");
             return;
         }
         setParameter = 3;
         setValue = realValue;
     } else if (parameterName === "warmwater_operation_mode") {
         if (!types.hpMode.hasOwnProperty(realValue.toString())) {
-            winston.log("error", "Wrong parameter given for opModeHotWater, use Automatik,Party,Off");
+            winston.log("error", "Wrong parameter given for warmwater_operation_mode");
             return;
         }
         setParameter = 4;
@@ -593,14 +605,10 @@ function startWrite(host, port, parameterName, realValue) {
         realValue = setValue;
     } else if (parameterName === "cooling_release_temp") {
         setParameter = 110;
-        // Allow only integer temperature or with decimal .5
-        setValue = parseInt(realValue * 2, 10) * 5;
-        realValue = setValue / 10;
+        setValue = value2SetValue(realValue);
     } else if (parameterName === "cooling_inlet_temp") {
         setParameter = 132;
-        // Allow only integer temperature or with decimal .5
-        setValue = parseInt(realValue * 2, 10) * 5;
-        realValue = setValue / 10;
+        setValue = value2SetValue(realValue);
     } else if (parameterName === "cooling_start") {
         setParameter = 850;
         realValue = setValue;

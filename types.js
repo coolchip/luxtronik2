@@ -4,7 +4,7 @@ module.exports = {
         "1": "Zusatzheizung",
         "2": "Party",
         "3": "Ferien",
-        "4": "Aus",
+        "4": "Aus"
     },
 
     stateMessages: {
@@ -14,7 +14,7 @@ module.exports = {
         "4": "Fehler",
         "5": "Abtauen",
         "7": "Verdichter heizt auf",
-        "8": "Pumpenvorlauf",
+        "8": "Pumpenvorlauf"
     },
 
     extendetStateMessages: {
