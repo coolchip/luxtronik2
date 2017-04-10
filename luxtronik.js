@@ -13,6 +13,7 @@ const types = require("./types");
 
 // @TODO: Insert queue for read/write jobs
 // @TODO: Translate to english
+// @TODO: Return errors instead of winston.log them
 
 
 function luxtronik(host, port = 8888) {
@@ -82,14 +83,14 @@ function getExtendedStateString(values) {
 
     if (types.extendetStateMessages.hasOwnProperty(state3)) {
         stateStr = types.extendetStateMessages[state3];
-        if (state3 == 6) {
+        if (state3 === 6) {
             // Estrich Programm
             stateStr += " Stufe " + ahpStufe + " - " + ahpTemp + " °C";
-        } else if (state3 == 7) {
+        } else if (state3 === 7) {
             // Abtauen
-            if (defrostValve == 1) {
+            if (defrostValve === 1) {
                 stateStr += "Abtauen (Kreisumkehr)";
-            } else if (compressor1 === 0 && heatSourceMotor == 1) {
+            } else if (compressor1 === 0 && heatSourceMotor === 1) {
                 stateStr += "Luftabtauen";
             } else {
                 stateStr += "Abtauen";
@@ -151,262 +152,262 @@ function toInt32ArrayReadBE(buffer) {
 
 function processData() {
     var payload = {};
-    const heatpump_parameters = toInt32ArrayReadBE(this.receivy["3003"].payload);
-    const heatpump_values = toInt32ArrayReadBE(this.receivy["3004"].payload);
-    const heatpump_visibility = this.receivy["3005"].payload;
+    const heatpumpParameters = toInt32ArrayReadBE(this.receivy["3003"].payload);
+    const heatpumpValues = toInt32ArrayReadBE(this.receivy["3004"].payload);
+    const heatpumpVisibility = this.receivy["3005"].payload;
 
-    if (heatpump_parameters !== undefined &&
-        heatpump_values !== undefined &&
-        heatpump_visibility !== undefined) {
+    if (heatpumpParameters !== undefined &&
+        heatpumpValues !== undefined &&
+        heatpumpVisibility !== undefined) {
 
         if (receivy.rawdata) {
             payload = {
-                values: "[" + heatpump_values + "]",
-                parameters: "[" + heatpump_parameters + "]"
+                values: "[" + heatpumpValues + "]",
+                parameters: "[" + heatpumpParameters + "]"
             };
         } else {
             payload = {
                 values: {
-                    "temperature_supply": heatpump_values[10] / 10, // #15
-                    "temperature_return": heatpump_values[11] / 10, // #16
-                    "temperature_target_return": heatpump_values[12] / 10, // #17
-                    "temperature_extern_return": (heatpump_visibility[24] == 1) ? heatpump_values[13] / 10 : "no", // #18
-                    "temperature_hot_gas": heatpump_values[14] / 10, // #26
-                    "temperature_outside": heatpump_values[15] / 10, // #12
-                    "temperature_outside_avg": heatpump_values[16] / 10, // #13
-                    "temperature_hot_water": heatpump_values[17] / 10, // #14
-                    "temperature_hot_water_target": heatpump_values[18] / 10, // #25
-                    "temperature_heat_source_in": heatpump_values[19] / 10, // #23
-                    "temperature_heat_source_out": heatpump_values[20] / 10, // #24
-                    "temperature_mixer1_flow": (heatpump_visibility[31] == 1) ? heatpump_values[21] / 10 : "no", // #55
-                    "temperature_mixer1_target": (heatpump_visibility[32] == 1) ? heatpump_values[22] / 10 : "no", // #56
-                    "temperaturw_RFV": (heatpump_visibility[33] == 1) ? heatpump_values[23] / 10 : "no",
-                    "temperature_mixer2_flow": (heatpump_visibility[34] == 1) ? heatpump_values[24] / 10 : "no", // #57
-                    "temperature_mixer2_target": (heatpump_visibility[35] == 1) ? heatpump_values[25] / 10 : "no", // #48
-                    "temperature_solar_collector": (heatpump_visibility[36] == 1) ? heatpump_values[26] / 10 : "no", // #50
-                    "temperature_solar_storage": (heatpump_visibility[37] == 1) ? heatpump_values[27] / 10 : "no", // #51
-                    "temperature_external_source": (heatpump_visibility[38] == 1) ? heatpump_values[28] / 10 : "no",
+                    "temperature_supply": heatpumpValues[10] / 10, // #15
+                    "temperature_return": heatpumpValues[11] / 10, // #16
+                    "temperature_target_return": heatpumpValues[12] / 10, // #17
+                    "temperature_extern_return": (heatpumpVisibility[24] === 1) ? heatpumpValues[13] / 10 : "no", // #18
+                    "temperature_hot_gas": heatpumpValues[14] / 10, // #26
+                    "temperature_outside": heatpumpValues[15] / 10, // #12
+                    "temperature_outside_avg": heatpumpValues[16] / 10, // #13
+                    "temperature_hot_water": heatpumpValues[17] / 10, // #14
+                    "temperature_hot_water_target": heatpumpValues[18] / 10, // #25
+                    "temperature_heat_source_in": heatpumpValues[19] / 10, // #23
+                    "temperature_heat_source_out": heatpumpValues[20] / 10, // #24
+                    "temperature_mixer1_flow": (heatpumpVisibility[31] === 1) ? heatpumpValues[21] / 10 : "no", // #55
+                    "temperature_mixer1_target": (heatpumpVisibility[32] === 1) ? heatpumpValues[22] / 10 : "no", // #56
+                    "temperaturw_RFV": (heatpumpVisibility[33] === 1) ? heatpumpValues[23] / 10 : "no",
+                    "temperature_mixer2_flow": (heatpumpVisibility[34] === 1) ? heatpumpValues[24] / 10 : "no", // #57
+                    "temperature_mixer2_target": (heatpumpVisibility[35] === 1) ? heatpumpValues[25] / 10 : "no", // #48
+                    "temperature_solar_collector": (heatpumpVisibility[36] === 1) ? heatpumpValues[26] / 10 : "no", // #50
+                    "temperature_solar_storage": (heatpumpVisibility[37] === 1) ? heatpumpValues[27] / 10 : "no", // #51
+                    "temperature_external_source": (heatpumpVisibility[38] === 1) ? heatpumpValues[28] / 10 : "no",
 
-                    "ASDin": heatpump_values[29],
-                    "BWTin": heatpump_values[30],
-                    "EVUin": heatpump_values[31],
-                    "HDin": heatpump_values[32],
-                    "MOTin": heatpump_values[33],
-                    "NDin": heatpump_values[34],
-                    "PEXin": heatpump_values[35],
-                    "SWTin": heatpump_values[36],
+                    "ASDin": heatpumpValues[29],
+                    "BWTin": heatpumpValues[30],
+                    "EVUin": heatpumpValues[31],
+                    "HDin": heatpumpValues[32],
+                    "MOTin": heatpumpValues[33],
+                    "NDin": heatpumpValues[34],
+                    "PEXin": heatpumpValues[35],
+                    "SWTin": heatpumpValues[36],
 
-                    "AVout": heatpump_values[37],
-                    "BUPout": heatpump_values[38],
-                    "HUPout": heatpump_values[39],
-                    "MA1out": heatpump_values[40],
-                    "MZ1out": heatpump_values[41],
-                    "VENout": heatpump_values[42],
-                    "VBOout": heatpump_values[43],
-                    "VD1out": heatpump_values[44],
-                    "VD2out": heatpump_values[45],
-                    "ZIPout": heatpump_values[46],
-                    "ZUPout": heatpump_values[47],
-                    "ZW1out": heatpump_values[48],
-                    "ZW2SSTout": heatpump_values[49],
-                    "ZW3SSTout": heatpump_values[50],
-                    "FP2out": heatpump_values[51],
-                    "SLPout": heatpump_values[52],
-                    "SUPout": heatpump_values[53],
-                    "MZ2out": heatpump_values[54],
-                    "MA2out": heatpump_values[55],
+                    "AVout": heatpumpValues[37],
+                    "BUPout": heatpumpValues[38],
+                    "HUPout": heatpumpValues[39],
+                    "MA1out": heatpumpValues[40],
+                    "MZ1out": heatpumpValues[41],
+                    "VENout": heatpumpValues[42],
+                    "VBOout": heatpumpValues[43],
+                    "VD1out": heatpumpValues[44],
+                    "VD2out": heatpumpValues[45],
+                    "ZIPout": heatpumpValues[46],
+                    "ZUPout": heatpumpValues[47],
+                    "ZW1out": heatpumpValues[48],
+                    "ZW2SSTout": heatpumpValues[49],
+                    "ZW3SSTout": heatpumpValues[50],
+                    "FP2out": heatpumpValues[51],
+                    "SLPout": heatpumpValues[52],
+                    "SUPout": heatpumpValues[53],
+                    "MZ2out": heatpumpValues[54],
+                    "MA2out": heatpumpValues[55],
 
-                    "defrostValve": (heatpump_visibility[47] == 1) ? heatpump_values[37] : "no", // #67
-                    "hotWaterBoilerValve": heatpump_values[38], // #9
-                    "heatingSystemCircPump": (heatpump_values[39] == 1) ? "on" : "off", // #27
+                    "defrostValve": (heatpumpVisibility[47] === 1) ? heatpumpValues[37] : "no", // #67
+                    "hotWaterBoilerValve": heatpumpValues[38], // #9
+                    "heatingSystemCircPump": (heatpumpValues[39] === 1) ? "on" : "off", // #27
 
-                    "heatSourceMotor": (heatpump_visibility[54] == 1) ? heatpump_values[43] : "no", // #64
-                    "compressor1": heatpump_values[44],
+                    "heatSourceMotor": (heatpumpVisibility[54] === 1) ? heatpumpValues[43] : "no", // #64
+                    "compressor1": heatpumpValues[44],
 
-                    "hotWaterCircPumpExtern": (heatpump_visibility[57] == 1) ? heatpump_values[46] : "no", // #28
+                    "hotWaterCircPumpExtern": (heatpumpVisibility[57] === 1) ? heatpumpValues[46] : "no", // #28
 
-                    "hours_compressor1": Math.round(heatpump_values[56] / 3600),
-                    "starts_compressor1": heatpump_values[57],
-                    "hours_compressor2": Math.round(heatpump_values[58] / 3600),
-                    "starts_compressor2": heatpump_values[59],
-                    "hours_2nd_heat_source1": (heatpump_visibility[84] == 1) ? Math.round(heatpump_values[60] / 3600) : "no", // #32
-                    "hours_2nd_heat_source2": (heatpump_visibility[85] == 1) ? Math.round(heatpump_values[61] / 3600) : "no", // #38
-                    "hours_2nd_heat_source3": (heatpump_visibility[86] == 1) ? Math.round(heatpump_values[62] / 3600) : "no", // #39
-                    "hours_heatpump": (heatpump_visibility[87] == 1) ? Math.round(heatpump_values[63] / 3600) : "no", // #33
-                    "hours_heating": (heatpump_visibility[195] == 1) ? Math.round(heatpump_values[64] / 3600) : "no", // #34
-                    "hours_warmwater": (heatpump_visibility[196] == 1) ? Math.round(heatpump_values[65] / 3600) : "no", // #35
-                    "hours_cooling": (heatpump_visibility[197] == 1) ? Math.round(heatpump_values[66] / 3600) : "no",
+                    "hours_compressor1": Math.round(heatpumpValues[56] / 3600),
+                    "starts_compressor1": heatpumpValues[57],
+                    "hours_compressor2": Math.round(heatpumpValues[58] / 3600),
+                    "starts_compressor2": heatpumpValues[59],
+                    "hours_2nd_heat_source1": (heatpumpVisibility[84] === 1) ? Math.round(heatpumpValues[60] / 3600) : "no", // #32
+                    "hours_2nd_heat_source2": (heatpumpVisibility[85] === 1) ? Math.round(heatpumpValues[61] / 3600) : "no", // #38
+                    "hours_2nd_heat_source3": (heatpumpVisibility[86] === 1) ? Math.round(heatpumpValues[62] / 3600) : "no", // #39
+                    "hours_heatpump": (heatpumpVisibility[87] === 1) ? Math.round(heatpumpValues[63] / 3600) : "no", // #33
+                    "hours_heating": (heatpumpVisibility[195] === 1) ? Math.round(heatpumpValues[64] / 3600) : "no", // #34
+                    "hours_warmwater": (heatpumpVisibility[196] === 1) ? Math.round(heatpumpValues[65] / 3600) : "no", // #35
+                    "hours_cooling": (heatpumpVisibility[197] === 1) ? Math.round(heatpumpValues[66] / 3600) : "no",
 
-                    "Time_WPein_akt": heatpump_values[67],
-                    "Time_ZWE1_akt": heatpump_values[68],
-                    "Time_ZWE2_akt": heatpump_values[69],
-                    "Timer_EinschVerz": heatpump_values[70],
-                    "Time_SSPAUS_akt": heatpump_values[71],
-                    "Time_SSPEIN_akt": heatpump_values[72],
-                    "Time_VDStd_akt": heatpump_values[73],
-                    "Time_HRM_akt": heatpump_values[74],
-                    "Time_HRW_akt": heatpump_values[75],
-                    "Time_LGS_akt": heatpump_values[76],
-                    "Time_SBW_akt": heatpump_values[77],
+                    "Time_WPein_akt": heatpumpValues[67],
+                    "Time_ZWE1_akt": heatpumpValues[68],
+                    "Time_ZWE2_akt": heatpumpValues[69],
+                    "Timer_EinschVerz": heatpumpValues[70],
+                    "Time_SSPAUS_akt": heatpumpValues[71],
+                    "Time_SSPEIN_akt": heatpumpValues[72],
+                    "Time_VDStd_akt": heatpumpValues[73],
+                    "Time_HRM_akt": heatpumpValues[74],
+                    "Time_HRW_akt": heatpumpValues[75],
+                    "Time_LGS_akt": heatpumpValues[76],
+                    "Time_SBW_akt": heatpumpValues[77],
 
-                    "typeHeatpump": types.hpTypes[heatpump_values[78]], // #31
-                    "bivalentLevel": heatpump_values[79], // #43
+                    "typeHeatpump": types.hpTypes[heatpumpValues[78]], // #31
+                    "bivalentLevel": heatpumpValues[79], // #43
 
-                    "WP_BZ_akt": heatpump_values[80],
+                    "WP_BZ_akt": heatpumpValues[80],
 
-                    "firmware": parseFirmware(heatpump_values.slice(81, 91)), // #20
+                    "firmware": parseFirmware(heatpumpValues.slice(81, 91)), // #20
 
-                    "AdresseIP_akt": int2ip(heatpump_values[91]),
-                    "SubNetMask_akt": int2ip(heatpump_values[92]),
-                    "Add_Broadcast": int2ip(heatpump_values[93]),
-                    "Add_StdGateway": int2ip(heatpump_values[94]),
+                    "AdresseIP_akt": int2ip(heatpumpValues[91]),
+                    "SubNetMask_akt": int2ip(heatpumpValues[92]),
+                    "Add_Broadcast": int2ip(heatpumpValues[93]),
+                    "Add_StdGateway": int2ip(heatpumpValues[94]),
 
                     "errors": [
-                        getLogLine(heatpump_values[95], heatpump_values[100]), // #42
-                        getLogLine(heatpump_values[96], heatpump_values[101]),
-                        getLogLine(heatpump_values[97], heatpump_values[102]),
-                        getLogLine(heatpump_values[98], heatpump_values[103]),
-                        getLogLine(heatpump_values[99], heatpump_values[104]),
+                        getLogLine(heatpumpValues[95], heatpumpValues[100]), // #42
+                        getLogLine(heatpumpValues[96], heatpumpValues[101]),
+                        getLogLine(heatpumpValues[97], heatpumpValues[102]),
+                        getLogLine(heatpumpValues[98], heatpumpValues[103]),
+                        getLogLine(heatpumpValues[99], heatpumpValues[104]),
                     ],
 
-                    "error_count": heatpump_values[105],
+                    "error_count": heatpumpValues[105],
 
                     "switch_off": [
-                        getLogLine(heatpump_values[111], heatpump_values[106]),
-                        getLogLine(heatpump_values[112], heatpump_values[107]),
-                        getLogLine(heatpump_values[113], heatpump_values[108]),
-                        getLogLine(heatpump_values[114], heatpump_values[109]),
-                        getLogLine(heatpump_values[115], heatpump_values[110]),
+                        getLogLine(heatpumpValues[111], heatpumpValues[106]),
+                        getLogLine(heatpumpValues[112], heatpumpValues[107]),
+                        getLogLine(heatpumpValues[113], heatpumpValues[108]),
+                        getLogLine(heatpumpValues[114], heatpumpValues[109]),
+                        getLogLine(heatpumpValues[115], heatpumpValues[110]),
                     ],
 
-                    "Comfort_exists": heatpump_values[116],
+                    "Comfort_exists": heatpumpValues[116],
 
-                    "heatpump_state1": heatpump_values[117],
-                    "heatpump_state2": heatpump_values[118], // #40
-                    "heatpump_state3": heatpump_values[119],
-                    "heatpump_duration": heatpump_values[120], // #41
-                    "heatpump_state_string": getStateString(heatpump_values),
-                    "heatpump_extendet_state_string": getExtendedStateString(heatpump_values),
+                    "heatpump_state1": heatpumpValues[117],
+                    "heatpump_state2": heatpumpValues[118], // #40
+                    "heatpump_state3": heatpumpValues[119],
+                    "heatpump_duration": heatpumpValues[120], // #41
+                    "heatpump_state_string": getStateString(heatpumpValues),
+                    "heatpump_extendet_state_string": getExtendedStateString(heatpumpValues),
 
-                    "ahp_Stufe": heatpump_values[121],
-                    "ahp_Temp": heatpump_values[122],
-                    "ahp_Zeit": heatpump_values[123],
+                    "ahp_Stufe": heatpumpValues[121],
+                    "ahp_Temp": heatpumpValues[122],
+                    "ahp_Zeit": heatpumpValues[123],
 
-                    "opStateHotWater": heatpump_values[124], // #8
-                    "opStateHotWaterString": getOpStateHotWater(heatpump_values),
-                    "opStateHeating": heatpump_values[125], // #46
-                    "opStateMixer1": heatpump_values[126],
-                    "opStateMixer2": heatpump_values[127],
-                    "Einst_Kurzprogramm": heatpump_values[128],
-                    "StatusSlave_1": heatpump_values[129],
-                    "StatusSlave_2": heatpump_values[130],
-                    "StatusSlave_3": heatpump_values[131],
-                    "StatusSlave_4": heatpump_values[132],
-                    "StatusSlave_5": heatpump_values[133],
+                    "opStateHotWater": heatpumpValues[124], // #8
+                    "opStateHotWaterString": getOpStateHotWater(heatpumpValues),
+                    "opStateHeating": heatpumpValues[125], // #46
+                    "opStateMixer1": heatpumpValues[126],
+                    "opStateMixer2": heatpumpValues[127],
+                    "Einst_Kurzprogramm": heatpumpValues[128],
+                    "StatusSlave_1": heatpumpValues[129],
+                    "StatusSlave_2": heatpumpValues[130],
+                    "StatusSlave_3": heatpumpValues[131],
+                    "StatusSlave_4": heatpumpValues[132],
+                    "StatusSlave_5": heatpumpValues[133],
 
-                    "rawDeviceTimeCalc": new Date(heatpump_values[134] * 1000).toString(), // #22
+                    "rawDeviceTimeCalc": new Date(heatpumpValues[134] * 1000).toString(), // #22
 
-                    "opStateMixer3": heatpump_values[135],
-                    "temperature_mixer3_target": (heatpump_visibility[211] == 1) ? heatpump_values[136] / 10 : "no", // #60
-                    "temperature_mixer3_flow": (heatpump_visibility[210] == 1) ? heatpump_values[137] / 10 : "no", // #59
+                    "opStateMixer3": heatpumpValues[135],
+                    "temperature_mixer3_target": (heatpumpVisibility[211] === 1) ? heatpumpValues[136] / 10 : "no", // #60
+                    "temperature_mixer3_flow": (heatpumpVisibility[210] === 1) ? heatpumpValues[137] / 10 : "no", // #59
 
-                    "MZ3out": heatpump_values[138],
-                    "MA3out": heatpump_values[139],
-                    "FP3out": heatpump_values[140],
+                    "MZ3out": heatpumpValues[138],
+                    "MA3out": heatpumpValues[139],
+                    "FP3out": heatpumpValues[140],
 
-                    "heatSourceDefrostTimer": (heatpump_visibility[219] == 1) ? heatpump_values[141] : "no", // #66
+                    "heatSourceDefrostTimer": (heatpumpVisibility[219] === 1) ? heatpumpValues[141] : "no", // #66
 
-                    "Temperatur_RFV2": heatpump_values[142] / 10,
-                    "Temperatur_RFV3": heatpump_values[143] / 10,
-                    "SH_SW": heatpump_values[144],
-                    "Zaehler_BetrZeitSW": Math.round(heatpump_values[145] / 3600),
-                    "FreigabKuehl": heatpump_values[146],
-                    "AnalogIn": heatpump_values[147],
-                    "SonderZeichen": heatpump_values[148],
-                    "SH_ZIP": heatpump_values[149],
-                    "WebsrvProgrammWerteBeobarten": heatpump_values[150],
+                    "Temperatur_RFV2": heatpumpValues[142] / 10,
+                    "Temperatur_RFV3": heatpumpValues[143] / 10,
+                    "SH_SW": heatpumpValues[144],
+                    "Zaehler_BetrZeitSW": Math.round(heatpumpValues[145] / 3600),
+                    "FreigabKuehl": heatpumpValues[146],
+                    "AnalogIn": heatpumpValues[147],
+                    "SonderZeichen": heatpumpValues[148],
+                    "SH_ZIP": heatpumpValues[149],
+                    "WebsrvProgrammWerteBeobarten": heatpumpValues[150],
 
-                    "thermalenergy_heating": (heatpump_visibility[0] == 1) ? heatpump_values[151] / 10 : "no", // #36
-                    "thermalenergy_warmwater": (heatpump_visibility[1] == 1) ? heatpump_values[152] / 10 : "no", // #37
-                    "thermalenergy_pool": (heatpump_visibility[2] == 1) ? heatpump_values[153] / 10 : "no", // #62
-                    "thermalenergy_total": heatpump_values[154] / 10,
-                    "flowRate": (heatpump_parameters[870] !== 0) ? heatpump_values[155] : "no", // #19
+                    "thermalenergy_heating": (heatpumpVisibility[0] === 1) ? heatpumpValues[151] / 10 : "no", // #36
+                    "thermalenergy_warmwater": (heatpumpVisibility[1] === 1) ? heatpumpValues[152] / 10 : "no", // #37
+                    "thermalenergy_pool": (heatpumpVisibility[2] === 1) ? heatpumpValues[153] / 10 : "no", // #62
+                    "thermalenergy_total": heatpumpValues[154] / 10,
+                    "flowRate": (heatpumpParameters[870] !== 0) ? heatpumpValues[155] : "no", // #19
 
-                    "analogOut1": heatpump_values[156],
-                    "analogOut2": heatpump_values[157],
-                    "Time_Heissgas": heatpump_values[158],
-                    "Temp_Lueftung_Zuluft": heatpump_values[159] / 10,
-                    "Temp_Lueftung_Abluft": heatpump_values[160] / 10,
+                    "analogOut1": heatpumpValues[156],
+                    "analogOut2": heatpumpValues[157],
+                    "Time_Heissgas": heatpumpValues[158],
+                    "Temp_Lueftung_Zuluft": heatpumpValues[159] / 10,
+                    "Temp_Lueftung_Abluft": heatpumpValues[160] / 10,
 
-                    "hours_solar": (heatpump_visibility[248] == 1) ? Math.round(heatpump_values[161] / 3600) : "no", // #52
-                    "analogOut3": heatpump_values[162],
-                    "analogOut4": (heatpump_visibility[267] == 1) ? heatpump_values[163] : "no", // #73 - Voltage heating system circulation pump
+                    "hours_solar": (heatpumpVisibility[248] === 1) ? Math.round(heatpumpValues[161] / 3600) : "no", // #52
+                    "analogOut3": heatpumpValues[162],
+                    "analogOut4": (heatpumpVisibility[267] === 1) ? heatpumpValues[163] : "no", // #73 - Voltage heating system circulation pump
 
-                    "Out_VZU": heatpump_values[164],
-                    "Out_VAB": heatpump_values[165],
-                    "Out_VSK": heatpump_values[166],
-                    "Out_FRH": heatpump_values[167],
-                    "AnalogIn2": heatpump_values[168],
-                    "AnalogIn3": heatpump_values[169],
-                    "SAXin": heatpump_values[170],
-                    "SPLin": heatpump_values[171],
-                    "Compact_exists": heatpump_values[172],
-                    "Durchfluss_WQ": heatpump_values[173],
-                    "LIN_exists": heatpump_values[174],
-                    "LIN_TUE": heatpump_values[175],
-                    "LIN_TUE1": heatpump_values[176],
-                    "LIN_VDH": heatpump_values[177],
-                    "LIN_UH": heatpump_values[178],
-                    "LIN_UH_Soll": heatpump_values[179],
-                    "LIN_HD": heatpump_values[180],
-                    "LIN_ND": heatpump_values[181],
-                    "LIN_VDH_out": heatpump_values[182]
+                    "Out_VZU": heatpumpValues[164],
+                    "Out_VAB": heatpumpValues[165],
+                    "Out_VSK": heatpumpValues[166],
+                    "Out_FRH": heatpumpValues[167],
+                    "AnalogIn2": heatpumpValues[168],
+                    "AnalogIn3": heatpumpValues[169],
+                    "SAXin": heatpumpValues[170],
+                    "SPLin": heatpumpValues[171],
+                    "Compact_exists": heatpumpValues[172],
+                    "Durchfluss_WQ": heatpumpValues[173],
+                    "LIN_exists": heatpumpValues[174],
+                    "LIN_TUE": heatpumpValues[175],
+                    "LIN_TUE1": heatpumpValues[176],
+                    "LIN_VDH": heatpumpValues[177],
+                    "LIN_UH": heatpumpValues[178],
+                    "LIN_UH_Soll": heatpumpValues[179],
+                    "LIN_HD": heatpumpValues[180],
+                    "LIN_ND": heatpumpValues[181],
+                    "LIN_VDH_out": heatpumpValues[182]
                 },
                 parameters: {
-                    "heating_temperature": heatpump_parameters[1] / 10, // #54 - returnTemperatureSetBack
-                    "warmwater_temperature": heatpump_parameters[2] / 10,
-                    "heating_operation_mode": heatpump_parameters[3], // #10
-                    "warmwater_operation_mode": heatpump_parameters[4], // #7
+                    "heating_temperature": heatpumpParameters[1] / 10, // #54 - returnTemperatureSetBack
+                    "warmwater_temperature": heatpumpParameters[2] / 10,
+                    "heating_operation_mode": heatpumpParameters[3], // #10
+                    "warmwater_operation_mode": heatpumpParameters[4], // #7
 
-                    "heating_operation_mode_string": getOpState(heatpump_parameters[3]),
-                    "warmwater_operation_mode_string": getOpState(heatpump_parameters[4]),
+                    "heating_operation_mode_string": getOpState(heatpumpParameters[3]),
+                    "warmwater_operation_mode_string": getOpState(heatpumpParameters[4]),
 
-                    "heating_curve_end_point": (heatpump_visibility[207] == 1) ? heatpump_parameters[11] / 10 : "no", // #69
-                    "heating_curve_parallel_offset": (heatpump_visibility[207] == 1) ? heatpump_parameters[12] / 10 : "no", // #70
-                    "deltaHeatingReduction": heatpump_parameters[13] / 10, // #47
+                    "heating_curve_end_point": (heatpumpVisibility[207] === 1) ? heatpumpParameters[11] / 10 : "no", // #69
+                    "heating_curve_parallel_offset": (heatpumpVisibility[207] === 1) ? heatpumpParameters[12] / 10 : "no", // #70
+                    "deltaHeatingReduction": heatpumpParameters[13] / 10, // #47
 
-                    "heatSourcedefrostAirThreshold": (heatpump_visibility[97] == 1) ? heatpump_parameters[44] / 10 : "no", // #71
+                    "heatSourcedefrostAirThreshold": (heatpumpVisibility[97] === 1) ? heatpumpParameters[44] / 10 : "no", // #71
 
-                    "hotWaterTemperatureHysterese": heatpump_parameters[74] / 10, // #49
+                    "hotWaterTemperatureHysterese": heatpumpParameters[74] / 10, // #49
 
-                    "returnTempHyst": (heatpump_visibility[93] == 1) ? heatpump_parameters[88] / 10 : "no", // #68
+                    "returnTempHyst": (heatpumpVisibility[93] === 1) ? heatpumpParameters[88] / 10 : "no", // #68
 
-                    "heatSourcedefrostAirEnd": (heatpump_visibility[105] == 1) ? heatpump_parameters[98] / 10 : "no", // #72
+                    "heatSourcedefrostAirEnd": (heatpumpVisibility[105] === 1) ? heatpumpParameters[98] / 10 : "no", // #72
 
-                    "temperature_hot_water_target": heatpump_parameters[105] / 10,
+                    "temperature_hot_water_target": heatpumpParameters[105] / 10,
 
-                    "cooling_operation_mode": heatpump_parameters[108],
+                    "cooling_operation_mode": heatpumpParameters[108],
 
-                    "cooling_release_temperature": heatpump_parameters[110] / 10,
-                    "thresholdTemperatureSetBack": heatpump_parameters[111] / 10, // #48
+                    "cooling_release_temperature": heatpumpParameters[110] / 10,
+                    "thresholdTemperatureSetBack": heatpumpParameters[111] / 10, // #48
 
-                    "cooling_inlet_temp": heatpump_parameters[132] / 10,
+                    "cooling_inlet_temp": heatpumpParameters[132] / 10,
 
-                    "hotWaterCircPumpDeaerate": (heatpump_visibility[167] == 1) ? heatpump_parameters[684] : "no", // #61
+                    "hotWaterCircPumpDeaerate": (heatpumpVisibility[167] === 1) ? heatpumpParameters[684] : "no", // #61
 
-                    "heatingLimit": heatpump_parameters[699], // #11
-                    "thresholdHeatingLimit": heatpump_parameters[700] / 10, // #21
+                    "heatingLimit": heatpumpParameters[699], // #11
+                    "thresholdHeatingLimit": heatpumpParameters[700] / 10, // #21
 
-                    "cooling_start_after_hours": heatpump_parameters[850],
-                    "cooling_stop_after_hours": heatpump_parameters[851],
+                    "cooling_start_after_hours": heatpumpParameters[850],
+                    "cooling_stop_after_hours": heatpumpParameters[851],
 
-                    "typeSerial": heatpump_parameters[874].toString().substr(0, 4) + "/" + heatpump_parameters[874].toString().substr(4) + "-" + heatpump_parameters[875].toString(16).toUpperCase(),
+                    "typeSerial": heatpumpParameters[874].toString().substr(0, 4) + "/" + heatpumpParameters[874].toString().substr(4) + "-" + heatpumpParameters[875].toString(16).toUpperCase(),
 
-                    "returnTemperatureTargetMin": heatpump_parameters[979] / 10 // #63
+                    "returnTemperatureTargetMin": heatpumpParameters[979] / 10 // #63
 
-                    //"possible_temperature_hot_water_limit1": heatpump_parameters[47] / 10,
-                    //"possible_temperature_hot_water_limit2": heatpump_parameters[84] / 10,
-                    //"possible_temperature_hot_water_limit3": heatpump_parameters[973] / 10,
+                    //"possible_temperature_hot_water_limit1": heatpumpParameters[47] / 10,
+                    //"possible_temperature_hot_water_limit2": heatpumpParameters[84] / 10,
+                    //"possible_temperature_hot_water_limit3": heatpumpParameters[973] / 10,
                 },
                 additional: {
                     "reading_calculated_time_ms": receivy.readingEndTime - receivy.readingStartTime
@@ -414,21 +415,21 @@ function processData() {
             };
 
             // skips inconsistent flow rates (known problem of the used flow measurement devices)
-            if (payload.values.flowRate != "no" && payload.values.heatingSystemCircPump) {
+            if (payload.values.flowRate !== "no" && payload.values.heatingSystemCircPump) {
                 if (payload.values.flowRate === 0) {
                     payload.values.flowRate = "inconsistent";
                 }
             }
 
-            if (payload.parameters.hotWaterCircPumpDeaerate != "no") {
+            if (payload.parameters.hotWaterCircPumpDeaerate !== "no") {
                 payload.parameters.hotWaterCircPumpDeaerate = payload.parameters.hotWaterCircPumpDeaerate ? "on" : "off";
             }
 
             // Consider also heating limit
             var value = "";
-            if (payload.parameters.heating_operation_mode === 0 && payload.parameters.heatingLimit == 1 &&
+            if (payload.parameters.heating_operation_mode === 0 && payload.parameters.heatingLimit === 1 &&
                 payload.values.temperature_outside_avg >= payload.parameters.thresholdHeatingLimit &&
-                (payload.values.temperature_target_return == payload.parameters.returnTemperatureTargetMin || payload.values.temperature_target_return == 20 && payload.values.temperature_outside < 10)
+                (payload.values.temperature_target_return === payload.parameters.returnTemperatureTargetMin || payload.values.temperature_target_return === 20 && payload.values.temperature_outside < 10)
             ) {
                 if (payload.values.temperature_outside >= 10) {
                     value = "Heizgrenze (Soll " + payload.parameters.returnTemperatureTargetMin + " °C)";
