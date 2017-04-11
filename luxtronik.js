@@ -11,11 +11,6 @@ winston.level = "warning";
 const types = require("./types");
 
 
-// @TODO: Insert queue for read/write jobs
-// @TODO: Translate to english
-// @TODO: Return errors instead of winston.log them
-
-
 function luxtronik(host, port) {
     if (typeof port === "undefined") {
         this._port = 8888;
