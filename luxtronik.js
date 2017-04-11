@@ -501,11 +501,25 @@ function startRead(host, port, rawdata, callback) {
             jobs: [3003, 3004, 3005],
             activeCommand: 0,
             readingStartTime: Date.now(),
-            rawdata,
-            callback
+            rawdata: rawdata,
+            callback: callback
         };
         process.nextTick(nextJob);
     });
+
+    client.on("error", function (error) {
+        winston.log("error", error);
+        client.destroy();
+        process.nextTick(
+            function() {
+                callback({
+                    error: "Unable to connect: " + error
+                })
+            }
+        );
+        client = null;
+    });
+
 
     client.on("data", function (data) {
         if (receivy.activeCommand === 0) {
@@ -517,9 +531,13 @@ function startRead(host, port, rawdata, callback) {
                 if (status > 0) {
                     winston.log("error", "Parameter on target changed, restart parameter reading after 5 seconds");
                     client.destroy();
-                    process.nextTick(receivy.callback({
-                        error: "busy"
-                    }));
+                    process.nextTick(
+                        function() {
+                            receivy.callback({
+                              error: "busy"
+                            })
+                        }
+                    );
                     return;
                 } else {
                     firstReadableDataAddress = 12;
@@ -633,6 +651,12 @@ function startWrite(host, port, parameterName, realValue) {
             buffer.writeInt32BE(setParameter, 4);
             buffer.writeInt32BE(setValue, 8);
             client.write(buffer);
+        });
+
+        client.on("error", function (error) {
+            winston.log("error", error);
+            client.destroy();
+            client = null;
         });
 
         client.on("data", function (data) {
