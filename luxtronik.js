@@ -16,9 +16,13 @@ const types = require("./types");
 // @TODO: Return errors instead of winston.log them
 
 
-function luxtronik(host, port = 8888) {
+function luxtronik(host, port) {
+    if (typeof port === "undefined") {
+        this._port = 8888;
+    } else {
+        this._port = port;
+    }
     this._host = host;
-    this._port = port;
 }
 
 
@@ -165,9 +169,9 @@ function processData() {
     const heatpumpValues = toInt32ArrayReadBE(receivy["3004"].payload);
     const heatpumpVisibility = receivy["3005"].payload;
 
-    if (heatpumpParameters === undefined ||
-        heatpumpValues === undefined ||
-        heatpumpVisibility === undefined) {
+    if (typeof heatpumpParameters === "undefined" ||
+        typeof heatpumpValues === "undefined" ||
+        typeof heatpumpVisibility === "undefined") {
 
         payload = {
             additional: {
@@ -648,6 +652,10 @@ function startWrite(host, port, parameterName, realValue) {
 
 
 luxtronik.prototype.read = function (rawdata, callback) {
+    if (rawdata instanceof Function) {
+        callback = rawdata;
+        rawdata = false;
+    }
     startRead(this._host, this._port, rawdata, callback);
 };
 
