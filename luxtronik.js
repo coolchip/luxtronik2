@@ -135,17 +135,31 @@ function getOpStateHotWater(values) {
 }
 
 
-function generateLogLine(time, msg) {
-    return new Date(time * 1000).toString() + " - " + msg;
+function generateCode(time, code, codeTypes) {
+    return {
+        code: code,
+        date: new Date(time * 1000),
+        message: codeTypes.hasOwnProperty(code) ? codeTypes[code] : codeTypes[-1]
+    }
 }
 
 
-function generateLogList(timeArray, msgArray) {
+function generateCodeList(timeArray, codeArray, codeTypes) {
     var logArray = [];
     for (var i = 0; i < timeArray.length; i++) {
-        logArray.push(generateLogLine(timeArray[i], msgArray[i]));
+        logArray.push(generateCode(timeArray[i], codeArray[i], codeTypes));
     }
     return logArray;
+}
+
+
+function generateOutageCodeList(timeArray, codeArray) {
+    return generateCodeList(timeArray, codeArray, types.outageCodes);
+}
+
+
+function generateErrorCodeList(timeArray, codeArray) {
+    return generateCodeList(timeArray, codeArray, types.errorCodes);
 }
 
 
@@ -277,11 +291,11 @@ function processData() {
                     "Add_Broadcast": int2ip(heatpumpValues[93]),
                     "Add_StdGateway": int2ip(heatpumpValues[94]),
 
-                    "errors": generateLogList(heatpumpValues.slice(95, 100), heatpumpValues.slice(100, 105)), // #42 Time of first error
+                    "errors": generateErrorCodeList(heatpumpValues.slice(95, 100), heatpumpValues.slice(100, 105)), // #42 Time of first error
 
                     "error_count": heatpumpValues[105],
 
-                    "switch_off": generateLogList(heatpumpValues.slice(111, 116), heatpumpValues.slice(106, 111)),
+                    "switch_off": generateOutageCodeList(heatpumpValues.slice(111, 116), heatpumpValues.slice(106, 111)),
 
                     "Comfort_exists": heatpumpValues[116],
 
