@@ -536,7 +536,8 @@ function startRead(host, port, rawdata, callback) {
                             receivy.callback({
                               error: "busy"
                             })
-                    });
+                        }
+                    );
                     return;
                 } else {
                     firstReadableDataAddress = 12;
