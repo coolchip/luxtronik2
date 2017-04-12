@@ -1,3 +1,8 @@
+/**
+ * @module luxtronik2
+ * @copyright Sebastiain B. <coolchip@gmx.de>
+ */
+
 const net = require("net");
 const winston = require("winston");
 const humanizeduration = require("humanize-duration");
