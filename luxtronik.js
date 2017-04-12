@@ -26,7 +26,7 @@ function luxtronik(host, port) {
 }
 
 
-luxtronik.prototype.processData = function () {
+luxtronik.prototype._processData = function () {
     var payload = {};
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy["3003"].payload);
     const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy["3004"].payload);
@@ -330,7 +330,7 @@ luxtronik.prototype.processData = function () {
 };
 
 
-luxtronik.prototype.writeCommand = function (command) {
+luxtronik.prototype._writeCommand = function (command) {
     const buffer = Buffer.allocUnsafe(8);
     buffer.writeInt32BE(command, 0);
     buffer.writeInt32BE(0, 4);
@@ -338,20 +338,20 @@ luxtronik.prototype.writeCommand = function (command) {
 };
 
 
-luxtronik.prototype.nextJob = function () {
+luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
         this.receivy.activeCommand = 0;
-        this.writeCommand(this.receivy.jobs.shift());
+        this._writeCommand(this.receivy.jobs.shift());
     } else {
         this.client.destroy();
         this.client = null;
         this.receivy.readingEndTime = Date.now();
-        process.nextTick(this.processData.bind(this));
+        process.nextTick(this._processData.bind(this));
     }
 };
 
 
-luxtronik.prototype.startRead = function (rawdata, callback) {
+luxtronik.prototype._startRead = function (rawdata, callback) {
     this.receivy = {
         jobs: [3003, 3004, 3005],
         activeCommand: 0,
@@ -445,7 +445,7 @@ function value2SetValue(realValue) {
 }
 
 
-luxtronik.prototype.startWrite = function (parameterName, realValue) {
+luxtronik.prototype._startWrite = function (parameterName, realValue) {
     var setParameter = 0;
     var setValue = 0;
 
@@ -539,17 +539,17 @@ luxtronik.prototype.read = function (rawdata, callback) {
         callback = rawdata;
         rawdata = false;
     }
-    this.startRead(rawdata, callback);
+    this._startRead(rawdata, callback);
 };
 
 
 luxtronik.prototype.readRaw = function (callback) {
-    this.startRead(true, callback);
+    this._startRead(true, callback);
 };
 
 
 luxtronik.prototype.write = function (parameterName, realValue) {
-    this.startWrite(parameterName, realValue);
+    this._startWrite(parameterName, realValue);
 };
 
 
