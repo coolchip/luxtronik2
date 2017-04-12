@@ -369,20 +369,6 @@ luxtronik.prototype.startRead = function (rawdata, callback) {
     this.client.on("error", function (error) {
         winston.log("error", error);
         this.client.destroy();
-        process.nextTick(
-            function () {
-                this.receivy.callback({
-                    error: "Unable to connect: " + error
-                });
-            }.bind(this)
-        );
-        this.client = null;
-    });
-
-
-    this.client.on("error", function (error) {
-        winston.log("error", error);
-        this.client.destroy();
         this.client = null;
         process.nextTick(
             function () {
