@@ -17,6 +17,10 @@ const types = require("./types");
 
 
 function luxtronik(host, port) {
+    if (!(this instanceof luxtronik)) {
+        return new luxtronik(host, port);
+    }
+
     if (typeof port === "undefined") {
         this._port = 8888;
     } else {
