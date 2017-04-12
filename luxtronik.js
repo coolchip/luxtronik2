@@ -526,6 +526,12 @@ luxtronik.prototype.startWrite = function (parameterName, realValue) {
             this.client.write(buffer);
         });
 
+        this.client.on("error", function (error) {
+            winston.log("error", error);
+            this.client.destroy();
+            this.client = null;
+        }.bind(this));
+
         this.client.on("data", function (data) {
             const commandEcho = data.readInt32BE(0);
             if (commandEcho !== 3002) {
@@ -536,6 +542,7 @@ luxtronik.prototype.startWrite = function (parameterName, realValue) {
                 winston.log("debug", setParameterEcho + " - ok");
             }
             this.client.destroy();
+            this.client = null;
         });
     }
 };
