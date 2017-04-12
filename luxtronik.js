@@ -5,14 +5,9 @@
 
 const net = require("net");
 const winston = require("winston");
-const humanizeduration = require("humanize-duration");
-const huminizeoptions = {
-    language: "de",
-    conjunction: " und ",
-    serialComma: false
-};
 winston.level = "warning";
 
+const utils = require("./utils");
 const types = require("./types");
 
 
@@ -31,160 +26,10 @@ function luxtronik(host, port) {
 }
 
 
-function parseFirmware(buf) {
-    var firmware = "";
-    for (var key in buf) {
-        if ({}.hasOwnProperty.call(buf, key)) {
-            firmware += (buf[key] === 0) ? "" : String.fromCharCode(buf[key]);
-        }
-    }
-    return firmware;
-}
-
-
-function int2ip(value) {
-    var part1 = value & 255;
-    var part2 = ((value >> 8) & 255);
-    var part3 = ((value >> 16) & 255);
-    var part4 = ((value >> 24) & 255);
-    return part4 + "." + part3 + "." + part2 + "." + part1;
-}
-
-
-function getStateString(values) {
-    var stateStr = "";
-    const state1 = values[117];
-    const state2 = values[118];
-    const duration = values[120];
-
-    // Text aus Define
-    if (types.stateMessages.hasOwnProperty(state1)) {
-        stateStr = types.stateMessages[state1];
-        if (state2 === 0 || state2 === 2) {
-            stateStr += " seit ";
-        } else if (state2 === 1) {
-            stateStr += " in ";
-        }
-
-        // Sonderbehandlung bei WP-Fehlern - Zeitstempel des zuletzt aufgetretenen Fehlers nehmen
-        if (state2 === 2) {
-            stateStr += new Date(values[95] * 1000).toString();
-        } else {
-            stateStr += humanizeduration(duration * 1000, huminizeoptions);
-        }
-    } else {
-        winston.log("warning", "No idea what the heatpump will do in state " + state1);
-        stateStr = "Unknown [" + state1 + "]";
-    }
-    return stateStr;
-}
-
-
-function getExtendedStateString(values) {
-    var stateStr = "";
-    const defrostValve = values[37];
-    const heatSourceMotor = values[43];
-    const compressor1 = values[44];
-    const state3 = values[119];
-    const ahpStufe = values[121];
-    const ahpTemp = values[122] / 10;
-
-    if (types.extendetStateMessages.hasOwnProperty(state3)) {
-        stateStr = types.extendetStateMessages[state3];
-        if (state3 === 6) {
-            // Estrich Programm
-            stateStr += " Stufe " + ahpStufe + " - " + ahpTemp + " °C";
-        } else if (state3 === 7) {
-            // Abtauen
-            if (defrostValve === 1) {
-                stateStr += "Abtauen (Kreisumkehr)";
-            } else if (compressor1 === 0 && heatSourceMotor === 1) {
-                stateStr += "Luftabtauen";
-            } else {
-                stateStr += "Abtauen";
-            }
-        }
-    } else {
-        winston.log("warning", "No idea what the heatpump will do in state " + state3);
-        stateStr = "Unknown [" + state3 + "]";
-    }
-    return stateStr;
-}
-
-
-function getOpState(state) {
-    var stateStr = "";
-    if (types.hpMode.hasOwnProperty(state)) {
-        stateStr = types.hpMode[state];
-    } else {
-        winston.log("warning", "No idea what the heatpump will do in state " + state);
-        stateStr = "Unknown [" + state + "]";
-    }
-    return stateStr;
-}
-
-
-function getOpStateHotWater(values) {
-    var stateStr = "";
-    const hotWaterBoilerValve = values[38];
-    const opStateHotWater = values[124];
-    if (opStateHotWater === 0) {
-        stateStr = "Sperrzeit";
-    } else if (opStateHotWater === 1 && hotWaterBoilerValve === 1) {
-        stateStr = "Aufheizen";
-    } else if (opStateHotWater === 1 && hotWaterBoilerValve === 0) {
-        stateStr = "Temp. OK";
-    } else if (opStateHotWater === 3) {
-        stateStr = "Aus";
-    } else {
-        winston.log("warning", "No idea what the heatpump will do in state " + opStateHotWater + "/" + hotWaterBoilerValve);
-        stateStr = "Unknown [" + opStateHotWater + "/" + hotWaterBoilerValve + "]";
-    }
-    return stateStr;
-}
-
-
-function generateCode(time, code, codeTypes) {
-    return {
-        code: code,
-        date: new Date(time * 1000),
-        message: codeTypes.hasOwnProperty(code) ? codeTypes[code] : codeTypes[-1]
-    };
-}
-
-
-function generateCodeList(timeArray, codeArray, codeTypes) {
-    var logArray = [];
-    for (var i = 0; i < timeArray.length; i++) {
-        logArray.push(generateCode(timeArray[i], codeArray[i], codeTypes));
-    }
-    return logArray;
-}
-
-
-function generateOutageCodeList(timeArray, codeArray) {
-    return generateCodeList(timeArray, codeArray, types.outageCodes);
-}
-
-
-function generateErrorCodeList(timeArray, codeArray) {
-    return generateCodeList(timeArray, codeArray, types.errorCodes);
-}
-
-
-function toInt32ArrayReadBE(buffer) {
-    var i32a = new Int32Array(buffer.length / 4);
-    for (var i = 0; i < i32a.length; i++) {
-        i32a[i] = buffer.readInt32BE(i * 4);
-    }
-    return i32a;
-}
-
-
 luxtronik.prototype.processData = function () {
     var payload = {};
-    const heatpumpParameters = toInt32ArrayReadBE(this.receivy["3003"].payload);
-    const heatpumpValues = toInt32ArrayReadBE(this.receivy["3004"].payload);
+    const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy["3003"].payload);
+    const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy["3004"].payload);
     const heatpumpVisibility = this.receivy["3005"].payload;
 
     if (typeof heatpumpParameters === "undefined" ||
@@ -288,23 +133,23 @@ luxtronik.prototype.processData = function () {
                     "Time_LGS_akt": heatpumpValues[76],
                     "Time_SBW_akt": heatpumpValues[77],
 
-                    "typeHeatpump": types.hpTypes[heatpumpValues[78]], // #31
+                    "typeHeatpump": utils.createHeatPumptTypeString(heatpumpValues[78]), // #31
                     "bivalentLevel": heatpumpValues[79], // #43
 
                     "WP_BZ_akt": heatpumpValues[80],
 
-                    "firmware": parseFirmware(heatpumpValues.slice(81, 91)), // #20
+                    "firmware": utils.createFirmwareString(heatpumpValues.slice(81, 91)), // #20
 
-                    "AdresseIP_akt": int2ip(heatpumpValues[91]),
-                    "SubNetMask_akt": int2ip(heatpumpValues[92]),
-                    "Add_Broadcast": int2ip(heatpumpValues[93]),
-                    "Add_StdGateway": int2ip(heatpumpValues[94]),
+                    "AdresseIP_akt": utils.int2ipAddress(heatpumpValues[91]),
+                    "SubNetMask_akt": utils.int2ipAddress(heatpumpValues[92]),
+                    "Add_Broadcast": utils.int2ipAddress(heatpumpValues[93]),
+                    "Add_StdGateway": utils.int2ipAddress(heatpumpValues[94]),
 
-                    "errors": generateErrorCodeList(heatpumpValues.slice(95, 100), heatpumpValues.slice(100, 105)), // #42 Time of first error
+                    "errors": utils.createErrorCodeList(heatpumpValues.slice(95, 100), heatpumpValues.slice(100, 105)), // #42 Time of first error
 
                     "error_count": heatpumpValues[105],
 
-                    "switch_off": generateOutageCodeList(heatpumpValues.slice(111, 116), heatpumpValues.slice(106, 111)),
+                    "switch_off": utils.createOutageCodeList(heatpumpValues.slice(111, 116), heatpumpValues.slice(106, 111)),
 
                     "Comfort_exists": heatpumpValues[116],
 
@@ -312,15 +157,15 @@ luxtronik.prototype.processData = function () {
                     "heatpump_state2": heatpumpValues[118], // #40
                     "heatpump_state3": heatpumpValues[119],
                     "heatpump_duration": heatpumpValues[120], // #41
-                    "heatpump_state_string": getStateString(heatpumpValues),
-                    "heatpump_extendet_state_string": getExtendedStateString(heatpumpValues),
+                    "heatpump_state_string": utils.createStateString(heatpumpValues),
+                    "heatpump_extendet_state_string": utils.createExtendedStateString(heatpumpValues),
 
                     "ahp_Stufe": heatpumpValues[121],
                     "ahp_Temp": heatpumpValues[122],
                     "ahp_Zeit": heatpumpValues[123],
 
                     "opStateHotWater": heatpumpValues[124], // #8
-                    "opStateHotWaterString": getOpStateHotWater(heatpumpValues),
+                    "opStateHotWaterString": utils.createHotWaterStateString(heatpumpValues),
                     "opStateHeating": heatpumpValues[125], // #46
                     "opStateMixer1": heatpumpValues[126],
                     "opStateMixer2": heatpumpValues[127],
@@ -395,8 +240,8 @@ luxtronik.prototype.processData = function () {
                     "heating_operation_mode": heatpumpParameters[3], // #10
                     "warmwater_operation_mode": heatpumpParameters[4], // #7
 
-                    "heating_operation_mode_string": getOpState(heatpumpParameters[3]),
-                    "warmwater_operation_mode_string": getOpState(heatpumpParameters[4]),
+                    "heating_operation_mode_string": utils.createOperationStateString(heatpumpParameters[3]),
+                    "warmwater_operation_mode_string": utils.createOperationStateString(heatpumpParameters[4]),
 
                     "heating_curve_end_point": (heatpumpVisibility[207] === 1) ? heatpumpParameters[11] / 10 : "no", // #69
                     "heating_curve_parallel_offset": (heatpumpVisibility[207] === 1) ? heatpumpParameters[12] / 10 : "no", // #70

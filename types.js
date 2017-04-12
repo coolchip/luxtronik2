@@ -123,7 +123,8 @@ module.exports = {
         "76": "LD2AG",
         "77": "LWD90V",
         "78": "MSW3-12",
-        "79": "MSW3-12S"
+        "79": "MSW3-12S",
+        "-1": "Unbekannter Typ"
     }),
 
     errorCodes: Object.freeze({
