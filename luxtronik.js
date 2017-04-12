@@ -27,6 +27,7 @@ function luxtronik(host, port) {
         this._port = port;
     }
     this._host = host;
+    this.receivy = {};
 }
 
 
@@ -81,7 +82,6 @@ function getStateString(values) {
 
 function getExtendedStateString(values) {
     var stateStr = "";
-
     const defrostValve = values[37];
     const heatSourceMotor = values[43];
     const compressor1 = values[44];
@@ -149,7 +149,7 @@ function generateCode(time, code, codeTypes) {
         code: code,
         date: new Date(time * 1000),
         message: codeTypes.hasOwnProperty(code) ? codeTypes[code] : codeTypes[-1]
-    }
+    };
 }
 
 
@@ -181,11 +181,11 @@ function toInt32ArrayReadBE(buffer) {
 }
 
 
-function processData() {
+luxtronik.prototype.processData = function () {
     var payload = {};
-    const heatpumpParameters = toInt32ArrayReadBE(receivy["3003"].payload);
-    const heatpumpValues = toInt32ArrayReadBE(receivy["3004"].payload);
-    const heatpumpVisibility = receivy["3005"].payload;
+    const heatpumpParameters = toInt32ArrayReadBE(this.receivy["3003"].payload);
+    const heatpumpValues = toInt32ArrayReadBE(this.receivy["3004"].payload);
+    const heatpumpVisibility = this.receivy["3005"].payload;
 
     if (typeof heatpumpParameters === "undefined" ||
         typeof heatpumpValues === "undefined" ||
@@ -198,7 +198,7 @@ function processData() {
         };
     } else {
 
-        if (receivy.rawdata) {
+        if (this.receivy.rawdata) {
             payload = {
                 values: "[" + heatpumpValues + "]",
                 parameters: "[" + heatpumpParameters + "]"
@@ -436,7 +436,7 @@ function processData() {
                     //"possible_temperature_hot_water_limit3": heatpumpParameters[973] / 10,
                 },
                 additional: {
-                    "reading_calculated_time_ms": receivy.readingEndTime - receivy.readingStartTime
+                    "reading_calculated_time_ms": this.receivy.readingEndTime - this.receivy.readingStartTime
                 }
             };
 
@@ -481,66 +481,75 @@ function processData() {
             payload.values.opStateHeatingString = value;
         }
     }
-    receivy.callback(payload);
-}
+    this.receivy.callback(payload);
+};
 
 
-receivy = {};
-client = null;
-
-
-function writeCommand(command) {
+luxtronik.prototype.writeCommand = function (command) {
     const buffer = Buffer.allocUnsafe(8);
     buffer.writeInt32BE(command, 0);
     buffer.writeInt32BE(0, 4);
-    client.write(buffer);
-}
+    this.client.write(buffer);
+};
 
 
-function nextJob() {
-    if (receivy.jobs.length > 0) {
-        receivy.activeCommand = 0;
-        writeCommand(receivy.jobs.shift());
+luxtronik.prototype.nextJob = function () {
+    if (this.receivy.jobs.length > 0) {
+        this.receivy.activeCommand = 0;
+        this.writeCommand(this.receivy.jobs.shift());
     } else {
-        client.destroy();
-        client = null;
-        receivy.readingEndTime = Date.now();
-        process.nextTick(processData);
+        this.client.destroy();
+        this.client = null;
+        this.receivy.readingEndTime = Date.now();
+        process.nextTick(this.processData.bind(this));
     }
-}
+};
 
 
-function startRead(host, port, rawdata, callback) {
-    client = new net.Socket();
-    client.connect(port, host, function () {
+luxtronik.prototype.startRead = function (rawdata, callback) {
+    this.receivy = {
+        jobs: [3003, 3004, 3005],
+        activeCommand: 0,
+        readingStartTime: Date.now(),
+        rawdata,
+        callback
+    };
+
+    this.client = new net.Socket();
+    this.client.connect(this._port, this._host, function () {
         winston.log("debug", "Connected");
+        process.nextTick(this.nextJob.bind(this));
+    }.bind(this));
 
-        receivy = {
-            jobs: [3003, 3004, 3005],
-            activeCommand: 0,
-            readingStartTime: Date.now(),
-            rawdata: rawdata,
-            callback: callback
-        };
-        process.nextTick(nextJob);
-    });
-
-    client.on("error", function (error) {
+    this.client.on("error", function (error) {
         winston.log("error", error);
-        client.destroy();
+        this.client.destroy();
         process.nextTick(
-            function() {
-                callback({
+            function () {
+                this.receivy.callback({
                     error: "Unable to connect: " + error
-                })
-            }
+                });
+            }.bind(this)
         );
-        client = null;
+        this.client = null;
     });
 
 
-    client.on("data", function (data) {
-        if (receivy.activeCommand === 0) {
+    this.client.on("error", function (error) {
+        winston.log("error", error);
+        this.client.destroy();
+        this.client = null;
+        process.nextTick(
+            function () {
+                this.receivy.callback({
+                    error: "Unable to connect: " + error
+                });
+            }.bind(this)
+        );
+    }.bind(this));
+
+    this.client.on("data", function (data) {
+        if (this.receivy.activeCommand === 0) {
             const commandEcho = data.readInt32BE(0);
             var firstReadableDataAddress = 0;
 
@@ -548,12 +557,13 @@ function startRead(host, port, rawdata, callback) {
                 const status = data.readInt32BE(4);
                 if (status > 0) {
                     winston.log("error", "Parameter on target changed, restart parameter reading after 5 seconds");
-                    client.destroy();
+                    this.client.destroy();
+                    this.client = null;
                     process.nextTick(
-                        function() {
-                            receivy.callback({
-                              error: "busy"
-                            })
+                        function () {
+                            this.receivy.callback({
+                                error: "busy"
+                            }.bind(this));
                         }
                     );
                     return;
@@ -574,28 +584,28 @@ function startRead(host, port, rawdata, callback) {
             }
             const payload = data.slice(firstReadableDataAddress, data.length);
 
-            receivy.activeCommand = commandEcho;
-            receivy[commandEcho] = {
+            this.receivy.activeCommand = commandEcho;
+            this.receivy[commandEcho] = {
                 remaining: dataCount - payload.length,
                 payload
             };
         } else {
-            receivy[receivy.activeCommand] = {
-                remaining: receivy[receivy.activeCommand].remaining - data.length,
-                payload: Buffer.concat([receivy[receivy.activeCommand].payload, data])
+            this.receivy[this.receivy.activeCommand] = {
+                remaining: this.receivy[this.receivy.activeCommand].remaining - data.length,
+                payload: Buffer.concat([this.receivy[this.receivy.activeCommand].payload, data])
             };
         }
 
-        if (receivy[receivy.activeCommand].remaining <= 0) {
-            winston.log("debug", receivy.activeCommand + " completed");
-            process.nextTick(nextJob);
+        if (this.receivy[this.receivy.activeCommand].remaining <= 0) {
+            winston.log("debug", this.receivy.activeCommand + " completed");
+            process.nextTick(this.nextJob.bind(this));
         }
-    });
+    }.bind(this));
 
-    client.on("close", function () {
+    this.client.on("close", function () {
         winston.log("debug", "Connection closed");
     });
-}
+};
 
 
 function value2SetValue(realValue) {
@@ -604,7 +614,7 @@ function value2SetValue(realValue) {
 }
 
 
-function startWrite(host, port, parameterName, realValue) {
+luxtronik.prototype.startWrite = function (parameterName, realValue) {
     var setParameter = 0;
     var setValue = 0;
 
@@ -658,8 +668,8 @@ function startWrite(host, port, parameterName, realValue) {
     }
 
     if (setParameter !== 0) {
-        client = new net.Socket();
-        client.connect(port, host, function () {
+        this.client = new net.Socket();
+        this.client.connect(this._port, this._host, function () {
             winston.log("debug", "Connected");
             winston.log("debug", "Set parameter " + parameterName + "(" + setParameter + ") = " + realValue + "(" + setValue + ")");
 
@@ -668,16 +678,10 @@ function startWrite(host, port, parameterName, realValue) {
             buffer.writeInt32BE(command, 0);
             buffer.writeInt32BE(setParameter, 4);
             buffer.writeInt32BE(setValue, 8);
-            client.write(buffer);
+            this.client.write(buffer);
         });
 
-        client.on("error", function (error) {
-            winston.log("error", error);
-            client.destroy();
-            client = null;
-        });
-
-        client.on("data", function (data) {
+        this.client.on("data", function (data) {
             const commandEcho = data.readInt32BE(0);
             if (commandEcho !== 3002) {
                 winston.log("error", "Host did not confirm parameter setting");
@@ -686,11 +690,10 @@ function startWrite(host, port, parameterName, realValue) {
                 const setParameterEcho = data.readInt32BE(4);
                 winston.log("debug", setParameterEcho + " - ok");
             }
-            client.destroy();
-            client = null;
+            this.client.destroy();
         });
     }
-}
+};
 
 
 luxtronik.prototype.read = function (rawdata, callback) {
@@ -698,17 +701,17 @@ luxtronik.prototype.read = function (rawdata, callback) {
         callback = rawdata;
         rawdata = false;
     }
-    startRead(this._host, this._port, rawdata, callback);
+    this.startRead(rawdata, callback);
 };
 
 
 luxtronik.prototype.readRaw = function (callback) {
-    startRead(this._host, this._port, true, callback);
+    this.startRead(true, callback);
 };
 
 
 luxtronik.prototype.write = function (parameterName, realValue) {
-    startWrite(this._host, this._port, parameterName, realValue);
+    this.startWrite(parameterName, realValue);
 };
 
 
