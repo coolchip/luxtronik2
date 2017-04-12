@@ -1,13 +1,13 @@
 module.exports = {
-    operatingModes: {
+    operatingModes: Object.freeze({
         "0": "Automatik",
         "1": "Zusatzheizung",
         "2": "Party",
         "3": "Ferien",
         "4": "Aus"
-    },
+    }),
 
-    stateMessages: {
+    stateMessages: Object.freeze({
         "0": "Waermepumpe laeuft",
         "1": "Waermepumpe steht",
         "2": "Waermepumpe kommt",
@@ -15,9 +15,9 @@ module.exports = {
         "5": "Abtauen",
         "7": "Verdichter heizt auf",
         "8": "Pumpenvorlauf"
-    },
+    }),
 
-    extendetStateMessages: {
+    extendetStateMessages: Object.freeze({
         "0": "Heizbetrieb",
         "1": "Keine Anforderung",
         "2": "Netz Einschaltverzoegerung",
@@ -35,23 +35,23 @@ module.exports = {
         "16": "Durchflussueberwachung",
         "17": "Elektrische Zusatzheizung",
         "19": "Warmw. Nachheizung"
-    },
+    }),
 
-    hpMode: {
+    hpMode: Object.freeze({
         "0": "Automatik",
         "1": "Zusatzheizung",
         "2": "Party",
         "3": "Ferien",
         "4": "Aus"
-    },
+    }),
 
-    heatingState: {
+    heatingState: Object.freeze({
         "0": "Abgesenkt",
         "1": "Normal",
         "3": "Aus"
-    },
+    }),
 
-    hpTypes: {
+    hpTypes: Object.freeze({
         "0": "ERC",
         "1": "SW1",
         "2": "SW2",
@@ -124,9 +124,9 @@ module.exports = {
         "77": "LWD90V",
         "78": "MSW3-12",
         "79": "MSW3-12S"
-    },
+    }),
 
-    errorCodes: {
+    errorCodes: Object.freeze({
         '701': 'Niederdruckstoerung - Bitte Inst. rufen',
         '702': 'Niederdrucksperre - RESET automatisch',
         '703': 'Frostschutz - Bitte Inst. rufen',
@@ -201,9 +201,9 @@ module.exports = {
         '792': 'LIN-Verbindung unterbrochen',
         '793': 'Schwerw. Inverter Fehler',
         '-1' : 'Unbekannter Fehler'
-    },
+    }),
 
-    outageCodes: {
+    outageCodes: Object.freeze({
         '0': 'Waermepumpe Stoerung',
         '1': 'Anlagen Stoerung',
         '2': 'Betriebsart Zweiter Waermeerzeuger',
@@ -215,5 +215,5 @@ module.exports = {
         '8': 'Untere Einsatzgrenze',
         '9': 'Keine Anforderung',
         '-1' : 'Unbekannte Abschaltung'
-    }
+    })
 };
