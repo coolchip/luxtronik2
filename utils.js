@@ -159,6 +159,12 @@ function createHeatPumptTypeString(value) {
 }
 
 
+function value2LuxtronikSetValue(realValue) {
+    // Allow only integer temperature. Add factor x10.
+    return parseInt(realValue * 10, 10);
+}
+
+
 module.exports = {
     createFirmwareString,
     int2ipAddress,
@@ -169,5 +175,6 @@ module.exports = {
     createOutageCodeList,
     createErrorCodeList,
     toInt32ArrayReadBE,
-    createHeatPumptTypeString
+    createHeatPumptTypeString,
+    value2LuxtronikSetValue
 };
