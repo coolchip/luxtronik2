@@ -157,6 +157,16 @@ function isValidOperationMode(value) {
     return types.hpMode.hasOwnProperty(value.toString());
 }
 
+function limitRange(value, min, max) {
+    if (value < min) {
+        value = min;
+    }
+    if (value > max) {
+        value = max;
+    }
+    return value;
+}
+
 module.exports = {
     createFirmwareString,
     int2ipAddress,
@@ -169,5 +179,6 @@ module.exports = {
     toInt32ArrayReadBE,
     createHeatPumptTypeString,
     value2LuxtronikSetValue,
-    isValidOperationMode
+    isValidOperationMode,
+    limitRange
 };

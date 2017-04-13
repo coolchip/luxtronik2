@@ -296,7 +296,8 @@ luxtronik.prototype._processData = function () {
             let value = "";
             if (payload.parameters.heating_operation_mode === 0 && payload.parameters.heatingLimit === 1 &&
                 payload.values.temperature_outside_avg >= payload.parameters.thresholdHeatingLimit &&
-                (payload.values.temperature_target_return === payload.parameters.returnTemperatureTargetMin || payload.values.temperature_target_return === 20 && payload.values.temperature_outside < 10)
+                (payload.values.temperature_target_return === payload.parameters.returnTemperatureTargetMin ||
+                payload.values.temperature_target_return === 20 && payload.values.temperature_outside < 10)
             ) {
                 if (payload.values.temperature_outside >= 10) {
                     value = "Heizgrenze (Soll " + payload.parameters.returnTemperatureTargetMin + " °C)";
@@ -484,77 +485,64 @@ luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
 };
 
 luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, callback) {
-    let setParameter = 0;
-    let setValue = 0;
+    const writeParameters = Object.freeze({
+        "heating_target_temperature": {
+            setParameter: 1,
+            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, -10, 10))
+        },
+        "warmwater_target_temperaure": {
+            setParameter: 2,
+            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 30, 65))
+        },
+        "heating_operation_mode": {
+            setParameter: utils.isValidOperationMode(realValue) ? 3 : undefined,
+            setValue: realValue
+        },
+        "warmwater_operation_mode": {
+            setParameter: utils.isValidOperationMode(realValue) ? 4 : undefined,
+            setValue: realValue
+        },
+        "cooling_operation_mode": {
+            setParameter: 108,
+            setValue: realValue
+        },
+        "cooling_release_temp": {
+            setParameter: 110,
+            setValue: utils.value2LuxtronikSetValue(realValue)
+        },
+        "cooling_inlet_temp": {
+            setParameter: 132,
+            setValue: utils.value2LuxtronikSetValue(realValue)
+        },
+        "cooling_start": {
+            setParameter: 850,
+            setValue: realValue
+        },
+        "cooling_stop": {
+            setParameter: 851,
+            setValue: realValue
+        },
+        "wrongName": {
+            //setParameter: undefined,
+        }
+    });
 
-    if (parameterName === "heating_target_temperature") {
-        setParameter = 1;
-        if (realValue < -10) {
-            realValue = -10;
-        }
-        if (realValue > 10) {
-            realValue = +10;
-        }
-        setValue = utils.value2LuxtronikSetValue(realValue);
-    } else if (parameterName === "warmwater_target_temperaure") {
-        setParameter = 2;
-        if (realValue < 30) {
-            realValue = 30;
-        }
-        if (realValue > 65) {
-            realValue = 65;
-        }
-        setValue = utils.value2LuxtronikSetValue(realValue);
-    } else if (parameterName === "heating_operation_mode") {
-        if (utils.isValidOperationMode(realValue)) {
-            setParameter = 3;
-            setValue = realValue;
-        } else {
-            const error = "Wrong parameter given for heating_operation_mode";
-            winston.log("error", error);
-            process.nextTick(
-                function () {
-                    callback({
-                        error
-                    });
-                }
-            );
-        }
-    } else if (parameterName === "warmwater_operation_mode") {
-        if (utils.isValidOperationMode(realValue)) {
-            setParameter = 4;
-            setValue = realValue;
-        } else {
-            const error = "Wrong parameter given for warmwater_operation_mode";
-            winston.log("error", error);
-            process.nextTick(
-                function () {
-                    callback({
-                        error
-                    });
-                }
-            );
-        }
-    } else if (parameterName === "cooling_operation_mode") {
-        setParameter = 108;
-        realValue = setValue;
-    } else if (parameterName === "cooling_release_temp") {
-        setParameter = 110;
-        setValue = utils.value2LuxtronikSetValue(realValue);
-    } else if (parameterName === "cooling_inlet_temp") {
-        setParameter = 132;
-        setValue = utils.value2LuxtronikSetValue(realValue);
-    } else if (parameterName === "cooling_start") {
-        setParameter = 850;
-        realValue = setValue;
-    } else if (parameterName === "cooling_stop") {
-        setParameter = 851;
-        realValue = setValue;
-    }
-
-    if (setParameter !== 0) {
+    const set = writeParameters.hasOwnProperty(parameterName) ? writeParameters[parameterName] : writeParameters.wrongName;
+    if (typeof set.setParameter !== "undefined") {
+        const setParameter = set.setParameter;
+        const setValue = set.setValue;
         winston.log("debug", "Set parameter " + parameterName + "(" + setParameter + ") = " + realValue + "(" + setValue + ")");
         this._startWrite(setParameter, setValue, callback);
+    } else {
+        const error = "Wrong data";
+        winston.log("error", error);
+        process.nextTick(
+            function () {
+                callback({
+                    error
+                });
+            }
+        );
     }
 };
 
