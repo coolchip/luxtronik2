@@ -3,4 +3,3 @@ Next Steps
 - queue for read/write jobs
 - translate to english
 - return errors in callback instead of winston.log them
-- give the write function a callback to return writeOk or errors

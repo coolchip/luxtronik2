@@ -442,7 +442,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
 };
 
 
-luxtronik.prototype._startWrite = function (setParameter, setValue) {
+luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     this.client = new net.Socket();
     this.client.connect(this._port, this._host, function () {
         winston.log("debug", "Connected");
@@ -452,6 +452,13 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
 
     this.client.on("error", function (error) {
         winston.log("error", error);
+        process.nextTick(
+            function () {
+                callback({
+                    error
+                });
+            }
+        );
         this.client.destroy();
         this.client = null;
     }.bind(this));
@@ -459,11 +466,25 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
     this.client.on("data", function (data) {
         const commandEcho = data.readInt32BE(0);
         if (commandEcho !== 3002) {
-            winston.log("error", "Host did not confirm parameter setting");
-            return;
+            const error = "Host did not confirm parameter setting";
+            winston.log("error", error);
+            process.nextTick(
+                function () {
+                    callback({
+                        error
+                    });
+                }
+            );
         } else {
             const setParameterEcho = data.readInt32BE(4);
             winston.log("debug", setParameterEcho + " - ok");
+            process.nextTick(
+                function () {
+                    callback({
+                        msg: "write ok"
+                    });
+                }
+            );
         }
         this.client.destroy();
         this.client = null;
@@ -471,7 +492,7 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
 };
 
 
-luxtronik.prototype._handleWriteCommand = function (parameterName, realValue) {
+luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, callback) {
     var setParameter = 0;
     var setValue = 0;
 
@@ -498,14 +519,30 @@ luxtronik.prototype._handleWriteCommand = function (parameterName, realValue) {
             setParameter = 3;
             setValue = realValue;
         } else {
-            winston.log("error", "Wrong parameter given for heating_operation_mode");
+            const error = "Wrong parameter given for heating_operation_mode";
+            winston.log("error", error);
+            process.nextTick(
+                function () {
+                    callback({
+                        error
+                    });
+                }
+            );
         }
     } else if (parameterName === "warmwater_operation_mode") {
         if (utils.isValidOperationMode(realValue)) {
             setParameter = 4;
             setValue = realValue;
         } else {
-            winston.log("error", "Wrong parameter given for heating_operation_mode");
+            const error = "Wrong parameter given for warmwater_operation_mode";
+            winston.log("error", error);
+            process.nextTick(
+                function () {
+                    callback({
+                        error
+                    });
+                }
+            );
         }
     } else if (parameterName === "cooling_operation_mode") {
         setParameter = 108;
@@ -526,7 +563,7 @@ luxtronik.prototype._handleWriteCommand = function (parameterName, realValue) {
 
     if (setParameter !== 0) {
         winston.log("debug", "Set parameter " + parameterName + "(" + setParameter + ") = " + realValue + "(" + setValue + ")");
-        this._startWrite(setParameter, setValue);
+        this._startWrite(setParameter, setValue, callback);
     }
 };
 
@@ -545,8 +582,11 @@ luxtronik.prototype.readRaw = function (callback) {
 };
 
 
-luxtronik.prototype.write = function (parameterName, realValue) {
-    this._handleWriteCommand(parameterName, realValue);
+luxtronik.prototype.write = function (parameterName, realValue, callback) {
+    if (typeof callback === "undefined") {
+        callback = function () {};
+    }
+    this._handleWriteCommand(parameterName, realValue, callback);
 };
 
 
