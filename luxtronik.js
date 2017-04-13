@@ -330,18 +330,21 @@ luxtronik.prototype._processData = function () {
 };
 
 
-luxtronik.prototype._writeCommand = function (command) {
-    const buffer = Buffer.allocUnsafe(8);
-    buffer.writeInt32BE(command, 0);
-    buffer.writeInt32BE(0, 4);
-    this.client.write(buffer);
-};
+function sendData(client, data) {
+    if (typeof client !== "undefined" && client !== null) {
+        data.forEach(function (element) {
+            const buffer = Buffer.allocUnsafe(4);
+            buffer.writeInt32BE(element);
+            client.write(buffer);
+        });
+    }
+}
 
 
 luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
         this.receivy.activeCommand = 0;
-        this._writeCommand(this.receivy.jobs.shift());
+        sendData(this.client, [this.receivy.jobs.shift(), 0]);
     } else {
         this.client.destroy();
         this.client = null;
@@ -444,13 +447,8 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
         this.client = new net.Socket();
         this.client.connect(this._port, this._host, function () {
             winston.log("debug", "Connected");
-
-            const buffer = Buffer.allocUnsafe(12);
             const command = 3002;
-            buffer.writeInt32BE(command, 0);
-            buffer.writeInt32BE(setParameter, 4);
-            buffer.writeInt32BE(setValue, 8);
-            this.client.write(buffer);
+            sendData(this.client, [command, setParameter, setValue]);
         }.bind(this));
 
         this.client.on("error", function (error) {
