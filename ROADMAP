@@ -1,3 +1,6 @@
-// @TODO: Insert queue for read/write jobs
-// @TODO: Translate to english
-// @TODO: Return errors instead of winston.log them
+Next Steps
+- spell luxtronik call with a capital l
+- queue for read/write jobs
+- translate to english
+- return errors in callback instead of winston.log them
+- give the write function a callback to return writeOk or errors
