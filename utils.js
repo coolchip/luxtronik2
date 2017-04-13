@@ -9,10 +9,9 @@ const huminizeoptions = {
 
 const types = require("./types");
 
-
 function createFirmwareString(buf) {
-    var firmware = "";
-    for (var key in buf) {
+    let firmware = "";
+    for (const key in buf) {
         if ({}.hasOwnProperty.call(buf, key)) {
             firmware += (buf[key] === 0) ? "" : String.fromCharCode(buf[key]);
         }
@@ -21,15 +20,15 @@ function createFirmwareString(buf) {
 }
 
 function int2ipAddress(value) {
-    var part1 = value & 255;
-    var part2 = ((value >> 8) & 255);
-    var part3 = ((value >> 16) & 255);
-    var part4 = ((value >> 24) & 255);
+    const part1 = value & 255;
+    const part2 = ((value >> 8) & 255);
+    const part3 = ((value >> 16) & 255);
+    const part4 = ((value >> 24) & 255);
     return part4 + "." + part3 + "." + part2 + "." + part1;
 }
 
 function createStateString(values) {
-    var stateStr = "";
+    let stateStr = "";
     const state1 = values[117];
     const state2 = values[118];
     const duration = values[120];
@@ -55,9 +54,8 @@ function createStateString(values) {
     return stateStr;
 }
 
-
 function createExtendedStateString(values) {
-    var stateStr = "";
+    let stateStr = "";
     const defrostValve = values[37];
     const heatSourceMotor = values[43];
     const compressor1 = values[44];
@@ -86,9 +84,8 @@ function createExtendedStateString(values) {
     return stateStr;
 }
 
-
 function createOperationStateString(state) {
-    var stateStr = "";
+    let stateStr = "";
     if (types.hpMode.hasOwnProperty(state)) {
         stateStr = types.hpMode[state];
     } else {
@@ -97,9 +94,8 @@ function createOperationStateString(state) {
     return stateStr;
 }
 
-
 function createHotWaterStateString(values) {
-    var stateStr = "";
+    let stateStr = "";
     const hotWaterBoilerValve = values[38];
     const opStateHotWater = values[124];
     if (opStateHotWater === 0) {
@@ -116,59 +112,50 @@ function createHotWaterStateString(values) {
     return stateStr;
 }
 
-
 function createCode(time, code, codeTypes) {
     return {
-        code: code,
+        code,
         date: new Date(time * 1000),
         message: codeTypes.hasOwnProperty(code) ? codeTypes[code] : codeTypes[-1]
     };
 }
 
-
 function createCodeList(timeArray, codeArray, codeTypes) {
-    var logArray = [];
-    for (var i = 0; i < timeArray.length; i++) {
+    const logArray = [];
+    for (let i = 0; i < timeArray.length; i++) {
         logArray.push(createCode(timeArray[i], codeArray[i], codeTypes));
     }
     return logArray;
 }
 
-
 function createOutageCodeList(timeArray, codeArray) {
     return createCodeList(timeArray, codeArray, types.outageCodes);
 }
-
 
 function createErrorCodeList(timeArray, codeArray) {
     return createCodeList(timeArray, codeArray, types.errorCodes);
 }
 
-
 function toInt32ArrayReadBE(buffer) {
-    var i32a = new Int32Array(buffer.length / 4);
-    for (var i = 0; i < i32a.length; i++) {
+    const i32a = new Int32Array(buffer.length / 4);
+    for (let i = 0; i < i32a.length; i++) {
         i32a[i] = buffer.readInt32BE(i * 4);
     }
     return i32a;
 }
 
-
 function createHeatPumptTypeString(value) {
     return types.hpTypes.hasOwnProperty(value) ? types.hpTypes[value] : types.hpTypes[-1];
 }
-
 
 function value2LuxtronikSetValue(realValue) {
     // Allow only integer temperature. Add factor x10.
     return parseInt(realValue * 10, 10);
 }
 
-
 function isValidOperationMode(value) {
     return types.hpMode.hasOwnProperty(value.toString());
 }
-
 
 module.exports = {
     createFirmwareString,

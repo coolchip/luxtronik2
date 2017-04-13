@@ -8,7 +8,15 @@
     "net": "^1.0.2",
     "winston": "^2.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-standard": "^10.2.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-require-path-exists": "^1.1.5",
+    "eslint-plugin-standard": "^3.0.1"
+  },
   "scripts": {
     "start": "node example.js"
   },

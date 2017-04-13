@@ -10,7 +10,6 @@ winston.level = "warning";
 const utils = require("./utils");
 const types = require("./types");
 
-
 function luxtronik(host, port) {
     if (!(this instanceof luxtronik)) {
         return new luxtronik(host, port);
@@ -25,9 +24,8 @@ function luxtronik(host, port) {
     this.receivy = {};
 }
 
-
 luxtronik.prototype._processData = function () {
-    var payload = {};
+    let payload = {};
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy["3003"].payload);
     const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy["3004"].payload);
     const heatpumpVisibility = this.receivy["3005"].payload;
@@ -35,14 +33,12 @@ luxtronik.prototype._processData = function () {
     if (typeof heatpumpParameters === "undefined" ||
         typeof heatpumpValues === "undefined" ||
         typeof heatpumpVisibility === "undefined") {
-
         payload = {
             additional: {
                 error: "Unexpected Data"
             }
         };
     } else {
-
         if (this.receivy.rawdata) {
             payload = {
                 values: "[" + heatpumpValues + "]",
@@ -276,9 +272,9 @@ luxtronik.prototype._processData = function () {
 
                     "returnTemperatureTargetMin": heatpumpParameters[979] / 10 // #63
 
-                    //"possible_temperature_hot_water_limit1": heatpumpParameters[47] / 10,
-                    //"possible_temperature_hot_water_limit2": heatpumpParameters[84] / 10,
-                    //"possible_temperature_hot_water_limit3": heatpumpParameters[973] / 10,
+                    // "possible_temperature_hot_water_limit1": heatpumpParameters[47] / 10,
+                    // "possible_temperature_hot_water_limit2": heatpumpParameters[84] / 10,
+                    // "possible_temperature_hot_water_limit3": heatpumpParameters[973] / 10,
                 },
                 additional: {
                     "reading_calculated_time_ms": this.receivy.readingEndTime - this.receivy.readingStartTime
@@ -297,7 +293,7 @@ luxtronik.prototype._processData = function () {
             }
 
             // Consider also heating limit
-            var value = "";
+            let value = "";
             if (payload.parameters.heating_operation_mode === 0 && payload.parameters.heatingLimit === 1 &&
                 payload.values.temperature_outside_avg >= payload.parameters.thresholdHeatingLimit &&
                 (payload.values.temperature_target_return === payload.parameters.returnTemperatureTargetMin || payload.values.temperature_target_return === 20 && payload.values.temperature_outside < 10)
@@ -329,7 +325,6 @@ luxtronik.prototype._processData = function () {
     this.receivy.callback(payload);
 };
 
-
 function sendData(client, data) {
     if (typeof client !== "undefined" && client !== null) {
         data.forEach(function (element) {
@@ -339,7 +334,6 @@ function sendData(client, data) {
         });
     }
 }
-
 
 luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
@@ -352,7 +346,6 @@ luxtronik.prototype._nextJob = function () {
         process.nextTick(this._processData.bind(this));
     }
 };
-
 
 luxtronik.prototype._startRead = function (rawdata, callback) {
     this.receivy = {
@@ -385,7 +378,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
     this.client.on("data", function (data) {
         if (this.receivy.activeCommand === 0) {
             const commandEcho = data.readInt32BE(0);
-            var firstReadableDataAddress = 0;
+            let firstReadableDataAddress = 0;
 
             if (commandEcho === 3004) {
                 const status = data.readInt32BE(4);
@@ -408,7 +401,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
                 firstReadableDataAddress = 8;
             }
             const paramCount = data.readInt32BE(firstReadableDataAddress - 4);
-            var dataCount = 0;
+            let dataCount = 0;
             if (commandEcho === 3005) {
                 // 8 Bit values
                 dataCount = paramCount;
@@ -440,7 +433,6 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
         winston.log("debug", "Connection closed");
     });
 };
-
 
 luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     this.client = new net.Socket();
@@ -491,10 +483,9 @@ luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     }.bind(this));
 };
 
-
 luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, callback) {
-    var setParameter = 0;
-    var setValue = 0;
+    let setParameter = 0;
+    let setValue = 0;
 
     if (parameterName === "heating_target_temperature") {
         setParameter = 1;
@@ -567,7 +558,6 @@ luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
     }
 };
 
-
 luxtronik.prototype.read = function (rawdata, callback) {
     if (rawdata instanceof Function) {
         callback = rawdata;
@@ -576,11 +566,9 @@ luxtronik.prototype.read = function (rawdata, callback) {
     this._startRead(rawdata, callback);
 };
 
-
 luxtronik.prototype.readRaw = function (callback) {
     this._startRead(true, callback);
 };
-
 
 luxtronik.prototype.write = function (parameterName, realValue, callback) {
     if (typeof callback === "undefined") {
@@ -588,6 +576,5 @@ luxtronik.prototype.write = function (parameterName, realValue, callback) {
     }
     this._handleWriteCommand(parameterName, realValue, callback);
 };
-
 
 module.exports = luxtronik;

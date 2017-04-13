@@ -1,0 +1,53 @@
+{
+    "extends": [
+        "standard",
+        "eslint:recommended"
+    ],
+    "plugins": [
+        "require-path-exists"
+    ],
+    "env": {
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "module"
+    },
+    "rules": {
+        "standard/no-callback-literal": "warn",
+        "object-curly-spacing": ["error", "always"],
+        "require-path-exists/exists": "error",
+        "require-path-exists/notEmpty": "error",
+        "require-path-exists/tooManyArguments": "error",
+        "semi": ["error", "always"],
+        "prefer-const": "error",
+        "no-var": "error",
+        "object-shorthand": "error",
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+        "quotes": ["error", "double"],
+        "padded-blocks": ["error", {
+            "blocks": "never"
+        }],
+        "prefer-template": "off",
+        "complexity": ["error", {
+            "max": 10
+        }],
+        "max-statements": ["error", 30, {
+            "ignoreTopLevelFunctions": false
+        }],
+        "no-multiple-empty-lines": "error",
+        "block-scoped-var": "error",
+        "default-case": "error",
+        "eqeqeq": "error",
+        "guard-for-in": "error",
+        "no-extra-bind": "error",
+        "no-implicit-coercion": "error",
+        "new-cap": "warn",
+        "callback-return": "error",
+        "global-require": "error"
+    }
+}

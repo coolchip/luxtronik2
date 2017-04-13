@@ -3,3 +3,4 @@ Next Steps
 - queue for read/write jobs
 - translate to english
 - return errors in callback instead of winston.log them
+- remove standard/no-callback-literal errors
