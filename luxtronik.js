@@ -363,7 +363,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
     this.client = new net.Socket();
     this.client.connect(this._port, this._host, function () {
         winston.log("debug", "Connected");
-        process.nextTick(this.nextJob.bind(this));
+        process.nextTick(this._nextJob.bind(this));
     }.bind(this));
 
     this.client.on("error", function (error) {
@@ -429,7 +429,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
 
         if (this.receivy[this.receivy.activeCommand].remaining <= 0) {
             winston.log("debug", this.receivy.activeCommand + " completed");
-            process.nextTick(this.nextJob.bind(this));
+            process.nextTick(this._nextJob.bind(this));
         }
     }.bind(this));
 
