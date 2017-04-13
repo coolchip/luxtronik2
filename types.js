@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
     operatingModes: Object.freeze({
         "0": "Automatik",
