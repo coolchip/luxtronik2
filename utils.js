@@ -165,6 +165,11 @@ function value2LuxtronikSetValue(realValue) {
 }
 
 
+function isValidOperationMode(value) {
+    return types.hpMode.hasOwnProperty(value.toString());
+}
+
+
 module.exports = {
     createFirmwareString,
     int2ipAddress,
@@ -176,5 +181,6 @@ module.exports = {
     createErrorCodeList,
     toInt32ArrayReadBE,
     createHeatPumptTypeString,
-    value2LuxtronikSetValue
+    value2LuxtronikSetValue,
+    isValidOperationMode
 };
