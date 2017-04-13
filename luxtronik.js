@@ -394,8 +394,8 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
                         function () {
                             this.receivy.callback({
                                 error: "busy"
-                            }.bind(this));
-                        }
+                            });
+                        }.bind(this)
                     );
                     return;
                 } else {
@@ -451,7 +451,7 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
             buffer.writeInt32BE(setParameter, 4);
             buffer.writeInt32BE(setValue, 8);
             this.client.write(buffer);
-        });
+        }.bind(this));
 
         this.client.on("error", function (error) {
             winston.log("error", error);
@@ -470,7 +470,7 @@ luxtronik.prototype._startWrite = function (setParameter, setValue) {
             }
             this.client.destroy();
             this.client = null;
-        });
+        }.bind(this));
     }
 };
 
