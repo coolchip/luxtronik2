@@ -3,6 +3,8 @@
  * @copyright Sebastiain B. <coolchip@gmx.de>
  */
 
+"use strict";
+
 const net = require("net");
 const winston = require("winston");
 winston.level = "warning";
