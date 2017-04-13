@@ -6,6 +6,7 @@ Luxtronik2
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d690e37c0ea94e8f99f1b1e36cd06687)](https://www.codacy.com/app/coolchip/luxtronik2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=coolchip/luxtronik2&amp;utm_campaign=Badge_Grade)
 [![Code Climate](https://codeclimate.com/github/coolchip/luxtronik2/badges/gpa.svg)](https://codeclimate.com/github/coolchip/luxtronik2)
 [![npm](https://img.shields.io/npm/l/express.svg)](https://www.npmjs.com/package/luxtronik2)
+
 ### Luxtronik2 reads and controls heat pumps based on the Luxtronik 2.0 contol unit with **Node.js**.
 
 This work based on the fantastic [FHEM module 'LUXTRONIK2'](https://wiki.fhem.de/wiki/Luxtronik_2.0), the very usefull [openHAB binding 'Novelan Luxtronic heat pump'](
