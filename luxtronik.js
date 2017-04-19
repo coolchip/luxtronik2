@@ -506,7 +506,7 @@ luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: 1,
             setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, -10, 10))
         },
-        "warmwater_target_temperaure": {
+        "warmwater_target_temperature": {
             setParameter: 2,
             setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 30, 65))
         },
