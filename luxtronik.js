@@ -262,7 +262,6 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 }
 
 luxtronik.prototype._processData = function () {
-    let payload = {};
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy["3003"].payload);
     const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy["3004"].payload);
     const heatpumpVisibility = this.receivy["3005"].payload;
@@ -270,76 +269,74 @@ luxtronik.prototype._processData = function () {
     if (typeof heatpumpParameters === "undefined" ||
         typeof heatpumpValues === "undefined" ||
         typeof heatpumpVisibility === "undefined") {
-        payload = {
+        return this.receivy.callback({
             additional: {
                 error: "Unexpected Data"
             }
-        };
-    } else {
-        if (this.receivy.rawdata) {
-            payload = {
-                values: "[" + heatpumpValues + "]",
-                parameters: "[" + heatpumpParameters + "]"
-            };
-        } else {
-            const values = processValues(heatpumpValues, heatpumpVisibility);
-            const parameters = processParameters(heatpumpParameters, heatpumpVisibility);
-            const additional = {
-                "reading_calculated_time_ms": this.receivy.readingEndTime - this.receivy.readingStartTime
-            };
+        });
+    }
+    if (this.receivy.rawdata) {
+        return this.receivy.callback({
+            values: "[" + heatpumpValues + "]",
+            parameters: "[" + heatpumpParameters + "]"
+        });
+    }
 
-            // flow rate
-            values.flowRate = (heatpumpParameters[870] !== 0) ? heatpumpValues[155] : "no"; // #19
+    const values = processValues(heatpumpValues, heatpumpVisibility);
+    const parameters = processParameters(heatpumpParameters, heatpumpVisibility);
+    const additional = {
+        "reading_calculated_time_ms": this.receivy.readingEndTime - this.receivy.readingStartTime
+    };
 
-            // skips inconsistent flow rates (known problem of the used flow measurement devices)
-            if (values.flowRate !== "no" && values.heatingSystemCircPump === "on") {
-                if (values.flowRate === 0) {
-                    values.flowRate = "inconsistent";
-                }
-            }
+    // flow rate
+    values.flowRate = (heatpumpParameters[870] !== 0) ? heatpumpValues[155] : "no"; // #19
 
-            if (parameters.hotWaterCircPumpDeaerate !== "no") {
-                parameters.hotWaterCircPumpDeaerate = parameters.hotWaterCircPumpDeaerate ? "on" : "off";
-            }
-
-            // Consider also heating limit
-            let heatingStateString = "";
-            if (parameters.heating_operation_mode === 0 && parameters.heatingLimit === 1 &&
-                values.temperature_outside_avg >= parameters.thresholdHeatingLimit &&
-                (values.temperature_target_return === parameters.returnTemperatureTargetMin ||
-                    values.temperature_target_return === 20 && values.temperature_outside < 10)
-            ) {
-                if (values.temperature_outside >= 10) {
-                    heatingStateString = "Heizgrenze (Soll " + parameters.returnTemperatureTargetMin + " °C)";
-                } else {
-                    heatingStateString = "Frostschutz (Soll 20 °C)";
-                }
-            } else {
-                if (types.heatingState.hasOwnProperty(values.opStateHeating)) {
-                    heatingStateString = types.heatingState[values.opStateHeating];
-                } else {
-                    heatingStateString = "unbekannt (" + values.opStateHeating + ")";
-                }
-
-                // Consider heating reduction limit
-                if (values.opStateHeating === 0) {
-                    if (parameters.thresholdTemperatureSetBack <= values.temperature_outside) {
-                        heatingStateString += " " + parameters.deltaHeatingReduction + " °C";
-                    } else {
-                        heatingStateString = "Normal da < " + parameters.thresholdTemperatureSetBack + " °C";
-                    }
-                }
-            }
-            values.opStateHeatingString = heatingStateString;
-
-            payload = {
-                values,
-                parameters,
-                additional
-            };
+    // skips inconsistent flow rates (known problem of the used flow measurement devices)
+    if (values.flowRate !== "no" && values.heatingSystemCircPump === "on") {
+        if (values.flowRate === 0) {
+            values.flowRate = "inconsistent";
         }
     }
-    this.receivy.callback(payload);
+
+    if (parameters.hotWaterCircPumpDeaerate !== "no") {
+        parameters.hotWaterCircPumpDeaerate = parameters.hotWaterCircPumpDeaerate ? "on" : "off";
+    }
+
+    // Consider also heating limit
+    let heatingStateString = "";
+    if (parameters.heating_operation_mode === 0 && parameters.heatingLimit === 1 &&
+        values.temperature_outside_avg >= parameters.thresholdHeatingLimit &&
+        (values.temperature_target_return === parameters.returnTemperatureTargetMin ||
+            values.temperature_target_return === 20 && values.temperature_outside < 10)
+    ) {
+        if (values.temperature_outside >= 10) {
+            heatingStateString = "Heizgrenze (Soll " + parameters.returnTemperatureTargetMin + " °C)";
+        } else {
+            heatingStateString = "Frostschutz (Soll 20 °C)";
+        }
+    } else {
+        if (types.heatingState.hasOwnProperty(values.opStateHeating)) {
+            heatingStateString = types.heatingState[values.opStateHeating];
+        } else {
+            heatingStateString = "unbekannt (" + values.opStateHeating + ")";
+        }
+
+        // Consider heating reduction limit
+        if (values.opStateHeating === 0) {
+            if (parameters.thresholdTemperatureSetBack <= values.temperature_outside) {
+                heatingStateString += " " + parameters.deltaHeatingReduction + " °C";
+            } else {
+                heatingStateString = "Normal da < " + parameters.thresholdTemperatureSetBack + " °C";
+            }
+        }
+    }
+    values.opStateHeatingString = heatingStateString;
+
+    return this.receivy.callback({
+        values,
+        parameters,
+        additional
+    });
 };
 
 function sendData(client, data) {

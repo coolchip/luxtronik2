@@ -11,4 +11,6 @@ pump.read(function (data) {
 // });
 // pump.write("warmwater_target_temperature", 60);
 // pump.write("heating_operation_mode", 0);
-// pump.write("warmwater_operation_mode", 0);
+//pump.write("warmwater_operation_mode", 0, function (data) {
+//    console.log(data);
+//});
