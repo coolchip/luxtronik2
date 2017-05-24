@@ -26,11 +26,18 @@ How to use
 Connect your unit via lan and configure the ip parameters at your unit. The port number of your unit is 8888 by default.
 Clone this code via git. You will get a package named luxtronik.js. You can require this at your code to read and write to your heat pump.
 
+Install
+-------
+Simply
+```bash
+npm install luxtronik2
+```
+
 Example
 -------
 
 ```javascript
-var luxtronik = require('./luxtronik');
+var luxtronik = require('luxtronik2');
 
 const hostIp = '192.168.0.20';  // <- Enter your Luxtronik IP here
 var pump = new luxtronik(hostIp, 8888);
@@ -51,5 +58,10 @@ pump.write('heating_operation_mode', 0);
 
 // set warm water operation mode to 'Auto'
 pump.write('warmwater_operation_mode', 0);
+
+// set heating target temperature and print out result
+pump.write('heating_target_temperature', 0, function (data) {
+    console.log(data);
+});
 
 ```
