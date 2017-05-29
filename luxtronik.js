@@ -269,14 +269,10 @@ Luxtronik.prototype._processData = function () {
     if (typeof heatpumpParameters === "undefined" ||
         typeof heatpumpValues === "undefined" ||
         typeof heatpumpVisibility === "undefined") {
-        return this.receivy.callback({
-            additional: {
-                error: "Unexpected Data"
-            }
-        });
+        return this.receivy.callback(new Error("Unexpected Data"));
     }
     if (this.receivy.rawdata) {
-        return this.receivy.callback({
+        return this.receivy.callback(null, {
             values: "[" + heatpumpValues + "]",
             parameters: "[" + heatpumpParameters + "]"
         });
@@ -332,7 +328,7 @@ Luxtronik.prototype._processData = function () {
     }
     values.opStateHeatingString = heatingStateString;
 
-    return this.receivy.callback({
+    return this.receivy.callback(null, {
         values,
         parameters,
         additional
@@ -382,9 +378,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
         this.client = null;
         process.nextTick(
             function () {
-                this.receivy.callback({
-                    error: "Unable to connect: " + error
-                });
+                this.receivy.callback(error);
             }.bind(this)
         );
     }.bind(this));
@@ -402,9 +396,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                     this.client = null;
                     process.nextTick(
                         function () {
-                            this.receivy.callback({
-                                error: "busy"
-                            });
+                            this.receivy.callback(new Error("heatpump busy"));
                         }.bind(this)
                     );
                     return;
@@ -460,9 +452,7 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
         winston.log("error", error);
         process.nextTick(
             function () {
-                callback({
-                    error
-                });
+                callback(error);
             }
         );
         this.client.destroy();
@@ -476,9 +466,7 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
             winston.log("error", error);
             process.nextTick(
                 function () {
-                    callback({
-                        error
-                    });
+                    callback(error);
                 }
             );
         } else {
@@ -486,7 +474,7 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
             winston.log("debug", setParameterEcho + " - ok");
             process.nextTick(
                 function () {
-                    callback({
+                    callback(null, {
                         msg: "write ok"
                     });
                 }
@@ -551,9 +539,7 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         winston.log("error", error);
         process.nextTick(
             function () {
-                callback({
-                    error
-                });
+                callback(error);
             }
         );
     }
