@@ -12,9 +12,9 @@ winston.level = "warning";
 const utils = require("./utils");
 const types = require("./types");
 
-function luxtronik(host, port) {
-    if (!(this instanceof luxtronik)) {
-        return new luxtronik(host, port);
+function Luxtronik(host, port) {
+    if (!(this instanceof Luxtronik)) {
+        return new Luxtronik(host, port);
     }
 
     if (typeof port === "undefined") {
@@ -261,7 +261,7 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
     };
 }
 
-luxtronik.prototype._processData = function () {
+Luxtronik.prototype._processData = function () {
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy["3003"].payload);
     const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy["3004"].payload);
     const heatpumpVisibility = this.receivy["3005"].payload;
@@ -349,7 +349,7 @@ function sendData(client, data) {
     }
 }
 
-luxtronik.prototype._nextJob = function () {
+Luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
         this.receivy.activeCommand = 0;
         sendData(this.client, [this.receivy.jobs.shift(), 0]);
@@ -361,7 +361,7 @@ luxtronik.prototype._nextJob = function () {
     }
 };
 
-luxtronik.prototype._startRead = function (rawdata, callback) {
+Luxtronik.prototype._startRead = function (rawdata, callback) {
     this.receivy = {
         jobs: [3003, 3004, 3005],
         activeCommand: 0,
@@ -448,7 +448,7 @@ luxtronik.prototype._startRead = function (rawdata, callback) {
     });
 };
 
-luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
+Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     this.client = new net.Socket();
     this.client.connect(this._port, this._host, function () {
         winston.log("debug", "Connected");
@@ -497,7 +497,7 @@ luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     }.bind(this));
 };
 
-luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, callback) {
+Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, callback) {
     const writeParameters = Object.freeze({
         "heating_target_temperature": {
             setParameter: 1,
@@ -559,7 +559,7 @@ luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
     }
 };
 
-luxtronik.prototype.read = function (rawdata, callback) {
+Luxtronik.prototype.read = function (rawdata, callback) {
     if (rawdata instanceof Function) {
         callback = rawdata;
         rawdata = false;
@@ -567,15 +567,15 @@ luxtronik.prototype.read = function (rawdata, callback) {
     this._startRead(rawdata, callback);
 };
 
-luxtronik.prototype.readRaw = function (callback) {
+Luxtronik.prototype.readRaw = function (callback) {
     this._startRead(true, callback);
 };
 
-luxtronik.prototype.write = function (parameterName, realValue, callback) {
+Luxtronik.prototype.write = function (parameterName, realValue, callback) {
     if (typeof callback === "undefined") {
         callback = function () {};
     }
     this._handleWriteCommand(parameterName, realValue, callback);
 };
 
-module.exports = luxtronik;
+module.exports = Luxtronik;
