@@ -394,12 +394,11 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                     winston.log("error", "Parameter on target changed, restart parameter reading after 5 seconds");
                     this.client.destroy();
                     this.client = null;
-                    process.nextTick(
+                    return process.nextTick(
                         function () {
                             this.receivy.callback(new Error("heatpump busy"));
                         }.bind(this)
                     );
-                    return;
                 } else {
                     firstReadableDataAddress = 12;
                 }
