@@ -43,15 +43,24 @@ const hostIp = '192.168.0.20';  // <- Enter your Luxtronik IP here
 var pump = new luxtronik(hostIp, 8888);
 
 // read all readable data
-pump.read(false, function (data) {
+pump.read(function (err, data) {
+    if (err) {
+        return console.log(err);
+    }
     console.log(data);
+    console.log(data.values.errors);
 });
 
 // set heating target temperature to 0 °C
 pump.write('heating_target_temperature', 0);
 
-// set warm water target temperature to 60 °C
-pump.write('warmwater_target_temperature', 60);
+// set warm water target temperature to 60 °C and use callback
+pump.write('warmwater_target_temperature', 60, function (err, res) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(res);
+});
 
 // set heating operation mode to 'Auto'
 pump.write('heating_operation_mode', 0);
@@ -59,9 +68,12 @@ pump.write('heating_operation_mode', 0);
 // set warm water operation mode to 'Auto'
 pump.write('warmwater_operation_mode', 0);
 
-// set heating target temperature and print out result
-pump.write('heating_target_temperature', 0, function (data) {
-    console.log(data);
+// set heating target temperature and use callback
+pump.write('heating_target_temperature', 0, , function (err, res) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(res);
 });
 
 ```
