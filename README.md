@@ -65,3 +65,7 @@ pump.write('heating_target_temperature', 0, function (data) {
 });
 
 ```
+
+Migrating to version 1.0.0
+--------------------------
+The API changed between version 0.1.2 and version 1.0.0. See migrating for information on how to migrate your application to the new API.
