@@ -1,5 +1,11 @@
 upcoming
 ====================
+  *
+
+v1.0.0 / 25 Jul 2017
+====================
+  * Return errors in callback instead of winston.log them
+  * Use standard for handling callback parameters in Node.js
   * correct spelling of "temperature" at write function
   * add early returns for cleaner functions
   * add installation how-to and rewrite example code
