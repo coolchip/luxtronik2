@@ -4,7 +4,8 @@
         "eslint:recommended"
     ],
     "plugins": [
-        "require-path-exists"
+        "require-path-exists",
+        "mocha"
     ],
     "env": {
         "node": true,
@@ -29,7 +30,7 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-        "quotes": ["error", "double"],
+        "quotes": ["error", "single"],
         "padded-blocks": ["error", {
             "blocks": "never"
         }],

@@ -24,7 +24,8 @@ https://github.com/openhab/openhab1-addons/wiki/Novelan-Luxtronic-heat-pump-bind
 How to use
 ----------
 Connect your unit via lan and configure the ip parameters at your unit. The port number of your unit is 8888 by default.
-Clone this code via git. You will get a package named luxtronik.js. You can require this at your code to read and write to your heat pump.
+Clone this code via git or simply via npm. You will get a package named luxtronik. You can require this at your code to
+read and write to your heat pump.
 
 Install
 -------
@@ -33,14 +34,13 @@ Simply
 npm install luxtronik2
 ```
 
-Example
--------
-
+Examples
+--------
 ```javascript
 var luxtronik = require('luxtronik2');
 
-const hostIp = '192.168.0.20';  // <- Enter your Luxtronik IP here
-var pump = new luxtronik(hostIp, 8888);
+const hostIp = '127.0.0.1';  // <- Enter your Luxtronik IP here
+var pump = new luxtronik.createConnection(hostIp, 8888);
 
 // read all readable data
 pump.read(function (err, data) {
@@ -69,7 +69,7 @@ pump.write('heating_operation_mode', 0);
 pump.write('warmwater_operation_mode', 0);
 
 // set heating target temperature and use callback
-pump.write('heating_target_temperature', 0, , function (err, res) {
+pump.write('heating_target_temperature', 0, function (err, res) {
     if (err) {
         return console.log(err);
     }
@@ -80,4 +80,4 @@ pump.write('heating_target_temperature', 0, , function (err, res) {
 
 Migrating to version 1.0.0
 --------------------------
-The API changed between version 0.1.2 and version 1.0.0. See migrating for information on how to migrate your application to the new API.
+The API changed between version 0.1.2 and version 1.0.0. [See migrating guide](MIGRATING.md) for information on how to migrate your application to the new API.

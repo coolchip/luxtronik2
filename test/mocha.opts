@@ -1,4 +1,5 @@
 ./test
 --async-only
+--colors
 --reporter spec
 --ui tdd

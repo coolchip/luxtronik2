@@ -1,7 +1,8 @@
-const Luxtronik = require("./luxtronik");
+const luxtronik = require('./luxtronik');
 
 /* eslint no-console: "off" */
-const pump = Luxtronik("192.168.178.22", 8888);
+const pump = luxtronik.createConnection('127.0.0.1', 8888);
+
 pump.read(function (err, data) {
     if (err) {
         return console.log(err);
@@ -9,15 +10,21 @@ pump.read(function (err, data) {
     console.log(data);
     console.log(data.values.errors);
 });
-// pump.write("heating_target_temperature", 0, function (err, data) {
-//     if (!err) {
-//         console.log(data);
-//     }
-// });
-// pump.write("warmwater_target_temperature", 60);
-// pump.write("heating_operation_mode", 0);
-// pump.write("warmwater_operation_mode", 0, function (err, data) {
-//     if (!err) {
-//        console.log(data);
-//     }
-//});
+/*
+pump.write('heating_target_temperature', 0, function (err, data) {
+    if (!err) {
+        console.log(data);
+    }
+});
+pump.write('warmwater_target_temperature', 60);
+pump.write('heating_operation_mode', 0, function (err, data) {
+    if (!err) {
+        console.log(data);
+    }
+});
+pump.write('warmwater_operation_mode', 0, function (err, data) {
+    if (!err) {
+        console.log(data);
+    }
+});
+*/

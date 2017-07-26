@@ -1,17 +1,17 @@
-upcoming
-====================
-  *
+Upcoming
+========
+  * optimize file/folder structure
+  * queue read/write jobs (fix for job collisions)
 
-v1.0.0 / 25 Jul 2017
-====================
-  * Return errors in callback instead of winston.log them
-  * Use standard for handling callback parameters in Node.js
+v1.0.0 / 25 Jul 2017 [see migrating guide](MIGRATING.md) 
+========================================================
+  * create object with luxtronik.createConnection() instead of "new"
+  * return errors in callback instead of winston.log them
+  * use error-first standard for handling callback parameters
   * correct spelling of "temperature" at write function
   * add early returns for cleaner functions
   * add installation how-to and rewrite example code
   * update dev-dependecies
-  * update roadmap and change to markdown file
-  * create this changelog
 
 v0.1.2 / 13 Apr 2017
 ====================

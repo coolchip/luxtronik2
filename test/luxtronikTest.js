@@ -1,94 +1,66 @@
-"use strict";
+'use strict';
 
-const assert = require("assertthat");
-//const proxyquire = require("proxyquire");
-const Net = require("net");
+const fs = require('fs');
+const path = require('path');
 
-//let socketListener = [];
-////close, data, error
+const assert = require('assertthat');
+const mitm = require('mitm')();
 
-// const socketStub = {
-//     "listener": [],
-//     "connect": (port, host, callback) => {
-//         process.nextTick(callback);
-//         process.nextTick(function () {
-//             socketListener["data"](5210);
-//         });
-//     },
-//     "on": (event, callback) => {
-//         socketListener.push({
-//             event,
-//             callback
-//         });
-//     },
-//     "destroy": () => {
-//         return socketListener = [];
-//     }
-// };
+const luxtronik = require('../luxtronik');
 
-// const netStub = {
-//     "Socket": () => {
-//         return socketStub;
-//     }
-// };
+let receiveDataBuffer = [];
 
-
-const Mitm = require("mitm");
-const mitm = Mitm();
-
-const Luxtronik = require("../luxtronik");
-
-mitm.on("connection", function (socket) {
-    console.log("cnnctn!");
-    socket.write(5210);
+mitm.on('connection', function (socket) {
+    socket.on('data', function (data) {
+        const recvSym = data.readInt32BE(0);
+        if (recvSym === 0) {
+            const command = receiveDataBuffer.pop();
+            const dataFile = path.join(__dirname, 'data', command.toString());
+            fs.readFile(dataFile, function (err, data) {
+                if (!err) {
+                    socket.write(data);
+                }
+            });
+            receiveDataBuffer = [];
+        } else {
+            receiveDataBuffer.push(recvSym);
+        }
+    });
 });
 
-mitm.on("connect", function (socket, opts) {
-    console.log("cnnct!");
-    if (opts.host === "sql.example.org" && opts.port === 5432) socket.bypass();
-});
-
-
-// const Luxtronik = proxyquire("../luxtronik", {
-//     "net": netStub
-// });
-
-suite("Mocha tests", () => {
-    suite("Luxtronik", () => {
-        test("is a function.", done => {
-            assert.that(Luxtronik).is.ofType("function");
+suite('Mocha tests', () => {
+    suite('Luxtronik', () => {
+        test('is an object.', done => {
+            assert.that(luxtronik).is.ofType('object');
             done();
         });
 
-        test("function returns an object.", done => {
-            assert.that(Luxtronik()).is.ofType("object");
+        test('createConnection() function returns an object.', done => {
+            assert.that(luxtronik.createConnection()).is.ofType('object');
             done();
         });
 
-        test("call with new returns an object.", done => {
-            assert.that(new Luxtronik).is.ofType("object");
+        test('connection has function read.', done => {
+            assert.that(luxtronik.createConnection().read).is.ofType('function');
+            done();
+        });
+
+        test('connection has function write.', done => {
+            assert.that(luxtronik.createConnection().write).is.ofType('function');
             done();
         });
     });
-    suite("Luxtronik pump", () => {
-        const pump = new Luxtronik();
 
-        test("read returns data.", done => {
+    suite('Luxtronik pump', () => {
+        const pump = luxtronik.createConnection('127.0.0.1', 8888);
+        test('read returns data.', done => {
             pump.read(function (err, data) {
                 assert.that(err).is.null();
-                assert.that(data).is.ofType("object");
+                assert.that(data).is.ofType('object');
+                assert.that(data.values).is.ofType('object');
+                assert.that(data.parameters).is.ofType('object');
                 done();
             });
         });
-/*
-        test("mitm.", done => {
-            const socket = Net.connect(22, "example.org");
-            socket.write("Hello!");
-            socket.setEncoding("utf8");
-            socket.read(); // => "Hello back!"
-
-            done();
-        });
-    */
     });
 });

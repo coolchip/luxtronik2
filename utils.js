@@ -1,19 +1,19 @@
-"use strict";
+'use strict';
 
-const humanizeduration = require("humanize-duration");
+const humanizeduration = require('humanize-duration');
 const huminizeoptions = {
-    language: "de",
-    conjunction: " und ",
+    language: 'de',
+    conjunction: ' und ',
     serialComma: false
 };
 
-const types = require("./types");
+const types = require('./types');
 
 function createFirmwareString(buf) {
-    let firmware = "";
+    let firmware = '';
     for (const key in buf) {
         if ({}.hasOwnProperty.call(buf, key)) {
-            firmware += (buf[key] === 0) ? "" : String.fromCharCode(buf[key]);
+            firmware += (buf[key] === 0) ? '' : String.fromCharCode(buf[key]);
         }
     }
     return firmware;
@@ -24,11 +24,11 @@ function int2ipAddress(value) {
     const part2 = ((value >> 8) & 255);
     const part3 = ((value >> 16) & 255);
     const part4 = ((value >> 24) & 255);
-    return part4 + "." + part3 + "." + part2 + "." + part1;
+    return part4 + '.' + part3 + '.' + part2 + '.' + part1;
 }
 
 function createStateString(values) {
-    let stateStr = "";
+    let stateStr = '';
     const state1 = values[117];
     const state2 = values[118];
     const duration = values[120];
@@ -37,9 +37,9 @@ function createStateString(values) {
     if (types.stateMessages.hasOwnProperty(state1)) {
         stateStr = types.stateMessages[state1];
         if (state2 === 0 || state2 === 2) {
-            stateStr += " seit ";
+            stateStr += ' seit ';
         } else if (state2 === 1) {
-            stateStr += " in ";
+            stateStr += ' in ';
         }
 
         // Sonderbehandlung bei WP-Fehlern - Zeitstempel des zuletzt aufgetretenen Fehlers nehmen
@@ -49,13 +49,13 @@ function createStateString(values) {
             stateStr += humanizeduration(duration * 1000, huminizeoptions);
         }
     } else {
-        stateStr = "Unknown [" + state1 + "]";
+        stateStr = 'Unknown [' + state1 + ']';
     }
     return stateStr;
 }
 
 function createExtendedStateString(values) {
-    let stateStr = "";
+    let stateStr = '';
     const defrostValve = values[37];
     const heatSourceMotor = values[43];
     const compressor1 = values[44];
@@ -67,47 +67,47 @@ function createExtendedStateString(values) {
         stateStr = types.extendetStateMessages[state3];
         if (state3 === 6) {
             // Estrich Programm
-            stateStr += " Stufe " + ahpStufe + " - " + ahpTemp + " °C";
+            stateStr += ' Stufe ' + ahpStufe + ' - ' + ahpTemp + ' °C';
         } else if (state3 === 7) {
             // Abtauen
             if (defrostValve === 1) {
-                stateStr += "Abtauen (Kreisumkehr)";
+                stateStr += 'Abtauen (Kreisumkehr)';
             } else if (compressor1 === 0 && heatSourceMotor === 1) {
-                stateStr += "Luftabtauen";
+                stateStr += 'Luftabtauen';
             } else {
-                stateStr += "Abtauen";
+                stateStr += 'Abtauen';
             }
         }
     } else {
-        stateStr = "Unknown [" + state3 + "]";
+        stateStr = 'Unknown [' + state3 + ']';
     }
     return stateStr;
 }
 
 function createOperationStateString(state) {
-    let stateStr = "";
+    let stateStr = '';
     if (types.hpMode.hasOwnProperty(state)) {
         stateStr = types.hpMode[state];
     } else {
-        stateStr = "Unknown [" + state + "]";
+        stateStr = 'Unknown [' + state + ']';
     }
     return stateStr;
 }
 
 function createHotWaterStateString(values) {
-    let stateStr = "";
+    let stateStr = '';
     const hotWaterBoilerValve = values[38];
     const opStateHotWater = values[124];
     if (opStateHotWater === 0) {
-        stateStr = "Sperrzeit";
+        stateStr = 'Sperrzeit';
     } else if (opStateHotWater === 1 && hotWaterBoilerValve === 1) {
-        stateStr = "Aufheizen";
+        stateStr = 'Aufheizen';
     } else if (opStateHotWater === 1 && hotWaterBoilerValve === 0) {
-        stateStr = "Temp. OK";
+        stateStr = 'Temp. OK';
     } else if (opStateHotWater === 3) {
-        stateStr = "Aus";
+        stateStr = 'Aus';
     } else {
-        stateStr = "Unknown [" + opStateHotWater + "/" + hotWaterBoilerValve + "]";
+        stateStr = 'Unknown [' + opStateHotWater + '/' + hotWaterBoilerValve + ']';
     }
     return stateStr;
 }
