@@ -218,5 +218,11 @@ module.exports = {
         '8': 'Untere Einsatzgrenze',
         '9': 'Keine Anforderung',
         '-1': 'Unbekannte Abschaltung'
+    }),
+
+    moduleErrors: Object.freeze({
+        unexpectedData: new Error ('Unexpected Data'),
+        heatpumpBusy: new Error ('Heatpump Busy')
     })
+
 };

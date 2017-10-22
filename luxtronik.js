@@ -269,7 +269,7 @@ Luxtronik.prototype._processData = function () {
     if (typeof heatpumpParameters === 'undefined' ||
         typeof heatpumpValues === 'undefined' ||
         typeof heatpumpVisibility === 'undefined') {
-        return this.receivy.callback(new Error('Unexpected Data'));
+        return this.receivy.callback(types.moduleErrors.unexpectedData);
     }
     if (this.receivy.rawdata) {
         return this.receivy.callback(null, {
@@ -398,7 +398,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                     this.client = null;
                     return process.nextTick(
                         function () {
-                            this.receivy.callback(new Error('heatpump busy'));
+                            this.receivy.callback(types.moduleErrors.heatpumpBusy);
                         }.bind(this)
                     );
                 } else {
@@ -569,4 +569,9 @@ const createConnection = function (host, port) {
     return new Luxtronik(host, port);
 };
 
+const moduleErrors = function () {
+    return types.moduleErrors;
+};
+
 module.exports.createConnection = createConnection;
+module.exports.moduleErrors = moduleErrors;
