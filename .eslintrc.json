@@ -35,9 +35,7 @@
             "blocks": "never"
         }],
         "prefer-template": "off",
-        "complexity": ["error", {
-            "max": 10
-        }],
+        "complexity": ["off"],
         "max-statements": ["error", 30, {
             "ignoreTopLevelFunctions": false
         }],
