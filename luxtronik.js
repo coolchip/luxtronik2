@@ -7,10 +7,17 @@
 
 const net = require('net');
 const winston = require('winston');
-winston.level = 'warning';
 
 const utils = require('./utils');
 const types = require('./types');
+
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console({
+            level: 'warning'
+        })
+    ]
+});
 
 function Luxtronik(host, port) {
     if (!(this instanceof Luxtronik)) {
@@ -370,12 +377,12 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
         host: this._host,
         port: this._port
     }, function () {
-        winston.log('debug', 'Connected');
+        logger.log('debug', 'Connected');
         process.nextTick(this._nextJob.bind(this));
     }.bind(this));
 
     this.client.on('error', function (error) {
-        winston.log('error', error);
+        logger.log('error', error);
         this.client.end();
         this.client = null;
         process.nextTick(
@@ -393,7 +400,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
             if (commandEcho === 3004) {
                 const status = data.readInt32BE(4);
                 if (status > 0) {
-                    winston.log('error', 'Parameter on target changed, restart parameter reading after 5 seconds');
+                    logger.log('error', 'Parameter on target changed, restart parameter reading after 5 seconds');
                     this.client.end();
                     this.client = null;
                     return process.nextTick(
@@ -431,13 +438,13 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
         }
 
         if (this.receivy[this.receivy.activeCommand].remaining <= 0) {
-            winston.log('debug', this.receivy.activeCommand + ' completed');
+            logger.log('debug', this.receivy.activeCommand + ' completed');
             process.nextTick(this._nextJob.bind(this));
         }
     }.bind(this));
 
     this.client.on('close', function () {
-        winston.log('debug', 'Connection closed');
+        logger.log('debug', 'Connection closed');
     });
 };
 
@@ -446,13 +453,13 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
         host: this._host,
         port: this._port
     }, function () {
-        winston.log('debug', 'Connected');
+        logger.log('debug', 'Connected');
         const command = 3002;
         sendData(this.client, [command, setParameter, setValue]);
     }.bind(this));
 
     this.client.on('error', function (error) {
-        winston.log('error', error);
+        logger.log('error', error);
         process.nextTick(
             function () {
                 callback(error);
@@ -467,13 +474,13 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
         let next;
         if (commandEcho !== 3002) {
             const error = 'Host did not confirm parameter setting';
-            winston.log('error', error);
+            logger.log('error', error);
             next = function () {
                 callback(error);
             };
         } else {
             const setParameterEcho = data.readInt32BE(4);
-            winston.log('debug', setParameterEcho + ' - ok');
+            logger.log('debug', setParameterEcho + ' - ok');
             next = function () {
                 callback(null, {
                     msg: 'write ok'
@@ -533,11 +540,11 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
     if (typeof set.setParameter !== 'undefined') {
         const setParameter = set.setParameter;
         const setValue = set.setValue;
-        winston.log('debug', 'Set parameter ' + parameterName + '(' + setParameter + ') = ' + realValue + '(' + setValue + ')');
+        logger.log('debug', 'Set parameter ' + parameterName + '(' + setParameter + ') = ' + realValue + '(' + setValue + ')');
         this._startWrite(setParameter, setValue, callback);
     } else {
         const error = 'Wrong data';
-        winston.log('error', error);
+        logger.log('error', error);
         process.nextTick(
             function () {
                 callback(error);

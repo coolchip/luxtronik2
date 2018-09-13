@@ -4,26 +4,27 @@
   "description": "Reads and controls heat pumps based on the Luxtronik 2.0 contol unit. Supports for example AlphaInnotec and Siemens Novelan (WRP NET).",
   "main": "luxtronik.js",
   "dependencies": {
-    "humanize-duration": "^3.10.1",
+    "humanize-duration": "^3.15.2",
     "net": "^1.0.2",
-    "winston": "^2.3.1"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
-    "assertthat": "^0.10.3",
-    "eslint": "^4.3.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-mocha": "^4.9.0",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-require-path-exists": "^1.1.7",
-    "eslint-plugin-standard": "^3.0.1",
-    "mitm": "^1.3.2",
-    "mocha": "^3.4.2"
+    "assertthat": "^1.0.0",
+    "eslint": "^5.5.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-require-path-exists": "^1.1.9",
+    "eslint-plugin-standard": "^4.0.0",
+    "mitm": "^1.3.3",
+    "mocha": "^5.2.0"
   },
   "scripts": {
     "start": "node example.js",
-    "test": "node_modules/.bin/mocha"
+    "test": "node_modules/.bin/mocha",
+    "lint": "node_modules/.bin/eslint ."
   },
   "repository": {
     "type": "git",
