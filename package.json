@@ -1,6 +1,6 @@
 {
   "name": "luxtronik2",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Reads and controls heat pumps based on the Luxtronik 2.0 contol unit. Supports for example AlphaInnotec and Siemens Novelan (WRP NET).",
   "main": "luxtronik.js",
   "dependencies": {
