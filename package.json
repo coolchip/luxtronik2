@@ -5,8 +5,7 @@
   "main": "luxtronik.js",
   "dependencies": {
     "humanize-duration": "^3.15.2",
-    "net": "^1.0.2",
-    "winston": "^3.1.0"
+    "net": "^1.0.2"
   },
   "devDependencies": {
     "assertthat": "^1.0.0",
