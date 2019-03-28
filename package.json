@@ -4,21 +4,21 @@
   "description": "Reads and controls heat pumps based on the Luxtronik 2.0 contol unit. Supports for example AlphaInnotec and Siemens Novelan (WRP NET).",
   "main": "luxtronik.js",
   "dependencies": {
-    "humanize-duration": "^3.15.2",
+    "humanize-duration": "^3.18.0",
     "net": "^1.0.2"
   },
   "devDependencies": {
-    "assertthat": "^1.0.0",
-    "eslint": "^5.5.0",
+    "assertthat": "^2.0.3",
+    "eslint": "^5.15.3",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-mocha": "^5.2.0",
-    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-mocha": "^5.3.0",
+    "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-require-path-exists": "^1.1.9",
     "eslint-plugin-standard": "^4.0.0",
-    "mitm": "^1.3.3",
-    "mocha": "^5.2.0"
+    "mitm": "^1.7.0",
+    "mocha": "^6.0.2"
   },
   "scripts": {
     "start": "node example.js",
