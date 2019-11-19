@@ -494,6 +494,14 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: utils.isValidOperationMode(realValue) ? 4 : undefined,
             setValue: realValue
         },
+        'hotWaterTemperatureHysterese': {
+            setParameter: 74,
+            setValue: utils.value2LuxtronikSetValue(realValue)
+        },
+        'returnTemperatureHysteresis': {
+            setParameter: 88,
+            setValue: utils.value2LuxtronikSetValue(realValue)
+        },
         'cooling_operation_mode': {
             setParameter: 108,
             setValue: realValue
