@@ -12,10 +12,11 @@
         "mocha": true
     },
     "parserOptions": {
-        "ecmaVersion": 5,
+        "ecmaVersion": 6,
         "sourceType": "module"
     },
     "rules": {
+        "indent": ["error", 4],
         "standard/no-callback-literal": "warn",
         "object-curly-spacing": ["error", "always"],
         "require-path-exists/exists": "error",
@@ -30,7 +31,9 @@
             "named": "never",
             "asyncArrow": "always"
         }],
+        "spaced-comment": "off",
         "quotes": ["error", "single"],
+        "quote-props": ["off"],
         "padded-blocks": ["error", {
             "blocks": "never"
         }],
@@ -48,6 +51,8 @@
         "no-implicit-coercion": "error",
         "new-cap": "warn",
         "callback-return": "error",
-        "global-require": "error"
+        "global-require": "error",
+        "no-mixed-operators": "off",
+        "no-prototype-builtins": "off"
     }
 }
