@@ -228,7 +228,7 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'hotWaterTemperatureHysterese': heatpumpParameters[74] / 10, // #49
 
-        'returnTempHyst': (heatpumpVisibility[93] === 1) ? heatpumpParameters[88] / 10 : 'no', // #68
+        'returnTemperatureHysteresis': (heatpumpVisibility[93] === 1) ? heatpumpParameters[88] / 10 : 'no', // #68
 
         'heatSourcedefrostAirEnd': (heatpumpVisibility[105] === 1) ? heatpumpParameters[98] / 10 : 'no', // #72
 
