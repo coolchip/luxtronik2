@@ -226,7 +226,7 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'heatSourcedefrostAirThreshold': (heatpumpVisibility[97] === 1) ? heatpumpParameters[44] / 10 : 'no', // #71
 
-        'hotWaterTemperatureHysterese': heatpumpParameters[74] / 10, // #49
+        'hotWaterTemperatureHysteresis': heatpumpParameters[74] / 10, // #49
 
         'returnTemperatureHysteresis': (heatpumpVisibility[93] === 1) ? heatpumpParameters[88] / 10 : 'no', // #68
 
@@ -494,7 +494,7 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: utils.isValidOperationMode(realValue) ? 4 : undefined,
             setValue: realValue
         },
-        'hotWaterTemperatureHysterese': {
+        'hotWaterTemperatureHysteresis': {
             setParameter: 74,
             setValue: utils.value2LuxtronikSetValue(realValue)
         },

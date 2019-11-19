@@ -2,7 +2,7 @@
 
 ## to 2.0.0
 
-Minimalistic breaking changes. Only the parameter name "returnTempHyst" has changed to "returnTemperatureHysteresis".
+Minimalistic breaking changes. Only the parameter name "returnTempHyst" has changed to "returnTemperatureHysteresis". And "hotWaterTemperatureHysterese" changed to "hotWaterTemperatureHysteresis".
 
 ## to 1.0.0
 
