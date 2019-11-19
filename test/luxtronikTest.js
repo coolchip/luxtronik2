@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const assert = require('assertthat');
+const { assert } = require('assertthat');
 const mitm = require('mitm')();
 
 const luxtronik = require('../luxtronik');
@@ -51,16 +51,16 @@ suite('Mocha tests', () => {
         });
     });
 
-/*    suite('Luxtronik pump', () => {
-        const pump = luxtronik.createConnection('127.0.0.1', 8888);
-        test('read returns data.', done => {
-            pump.read(function (err, data) {
-                assert.that(err).is.null();
-                assert.that(data).is.ofType('object');
-                assert.that(data.values).is.ofType('object');
-                assert.that(data.parameters).is.ofType('object');
-                done();
+    /*    suite('Luxtronik pump', () => {
+            const pump = luxtronik.createConnection('127.0.0.1', 8888);
+            test('read returns data.', done => {
+                pump.read(function (err, data) {
+                    assert.that(err).is.null();
+                    assert.that(data).is.ofType('object');
+                    assert.that(data.values).is.ofType('object');
+                    assert.that(data.parameters).is.ofType('object');
+                    done();
+                });
             });
-        });
-    });*/
+        });*/
 });
