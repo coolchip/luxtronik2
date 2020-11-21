@@ -494,6 +494,14 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: utils.isValidOperationMode(realValue) ? 4 : undefined,
             setValue: realValue
         },
+        'heating_curve_end_point': {
+            setParameter: 11,
+            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 20, 55))
+        },
+        'heating_curve_parallel_offset': {
+            setParameter: 12,
+            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 15, 45))
+        },
         'hotwater_temperature_hysteresis': {
             setParameter: 74,
             setValue: utils.value2LuxtronikSetValue(realValue)
