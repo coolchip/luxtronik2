@@ -148,9 +148,14 @@ function createHeatPumptTypeString(value) {
     return types.hpTypes.hasOwnProperty(value) ? types.hpTypes[value] : types.hpTypes[-1];
 }
 
-function value2LuxtronikSetValue(realValue) {
+function value2LuxtronikSetTemperatureValue(realValue) {
     // Allow only integer temperature. Add factor x10.
     return parseInt(realValue * 10, 10);
+}
+
+function value2LuxtronikSetHundrethValue(realValue) {
+    // Allow only integer temperature. Add factor x100.
+    return parseInt(realValue * 100, 10);
 }
 
 function isValidOperationMode(value) {
@@ -178,7 +183,8 @@ module.exports = {
     createErrorCodeList,
     toInt32ArrayReadBE,
     createHeatPumptTypeString,
-    value2LuxtronikSetValue,
+    value2LuxtronikSetTemperatureValue,
+    value2LuxtronikSetHundrethValue,
     isValidOperationMode,
     limitRange
 };

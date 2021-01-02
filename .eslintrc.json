@@ -17,7 +17,6 @@
     },
     "rules": {
         "indent": ["error", 4],
-        "standard/no-callback-literal": "warn",
         "object-curly-spacing": ["error", "always"],
         "require-path-exists/exists": "error",
         "require-path-exists/notEmpty": "error",

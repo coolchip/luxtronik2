@@ -480,11 +480,11 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
     const writeParameters = Object.freeze({
         'heating_target_temperature': {
             setParameter: 1,
-            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, -10, 10))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, -10, 10))
         },
         'warmwater_target_temperature': {
             setParameter: 2,
-            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 30, 65))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 30, 65))
         },
         'heating_operation_mode': {
             setParameter: utils.isValidOperationMode(realValue) ? 3 : undefined,
@@ -496,19 +496,19 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         },
         'heating_curve_end_point': {
             setParameter: 11,
-            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 20, 55))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 20, 55))
         },
         'heating_curve_parallel_offset': {
             setParameter: 12,
-            setValue: utils.value2LuxtronikSetValue(utils.limitRange(realValue, 15, 45))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 15, 45))
         },
         'hotwater_temperature_hysteresis': {
             setParameter: 74,
-            setValue: utils.value2LuxtronikSetValue(realValue)
+            setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
         },
         'return_temperature_hysteresis': {
             setParameter: 88,
-            setValue: utils.value2LuxtronikSetValue(realValue)
+            setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
         },
         'cooling_operation_mode': {
             setParameter: 108,
@@ -516,11 +516,11 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         },
         'cooling_release_temp': {
             setParameter: 110,
-            setValue: utils.value2LuxtronikSetValue(realValue)
+            setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
         },
         'cooling_inlet_temp': {
             setParameter: 132,
-            setValue: utils.value2LuxtronikSetValue(realValue)
+            setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
         },
         'cooling_start': {
             setParameter: 850,
@@ -529,6 +529,10 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         'cooling_stop': {
             setParameter: 851,
             setValue: realValue
+        },
+        'analogOut2': {
+            setParameter: 157,
+            setValue: utils.value2LuxtronikSetHundrethValue(realValue)
         },
         'wrongName': {
             //setParameter: undefined,
