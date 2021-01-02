@@ -349,6 +349,8 @@ function sendData(client, data) {
 Luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
         this.receivy.activeCommand = 0;
+        //@TODO reset temp buffer
+        this.dataBuffer = undefined;
         sendData(this.client, [this.receivy.jobs.shift(), 0]);
     } else {
         this.client.end();
@@ -385,52 +387,63 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
     }.bind(this));
 
     this.client.on('data', function (data) {
-        if (this.receivy.activeCommand === 0) {
-            const commandEcho = data.readInt32BE(0);
-            let firstReadableDataAddress = 0;
-
-            if (commandEcho === 3004) {
-                const status = data.readInt32BE(4);
-                if (status > 0) {
-                    // Parameter on target changed, restart parameter reading after 5 seconds
-                    this.client.end();
-                    this.client = null;
-                    return process.nextTick(
-                        function () {
-                            this.receivy.callback(new Error('heatpump busy'));
-                        }.bind(this)
-                    );
-                } else {
-                    firstReadableDataAddress = 12;
-                }
-            } else {
-                firstReadableDataAddress = 8;
-            }
-            const paramCount = data.readInt32BE(firstReadableDataAddress - 4);
-            let dataCount = 0;
-            if (commandEcho === 3005) {
-                // 8 Bit values
-                dataCount = paramCount;
-            } else {
-                // 32 Bit values
-                dataCount = paramCount * 4;
-            }
-            const payload = data.slice(firstReadableDataAddress, data.length);
-
-            this.receivy.activeCommand = commandEcho;
-            this.receivy[commandEcho] = {
-                remaining: dataCount - payload.length,
-                payload
-            };
+        //@TODO concat buffer
+        if (this.dataBuffer === undefined) {
+            this.dataBuffer = data;
         } else {
-            this.receivy[this.receivy.activeCommand] = {
-                remaining: this.receivy[this.receivy.activeCommand].remaining - data.length,
-                payload: Buffer.concat([this.receivy[this.receivy.activeCommand].payload, data])
-            };
+            this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
         }
 
-        if (this.receivy[this.receivy.activeCommand].remaining <= 0) {
-            process.nextTick(this._nextJob.bind(this));
+        if (data.length > 4) {
+            data = this.dataBuffer;
+
+            if (this.receivy.activeCommand === 0) {
+                const commandEcho = data.readInt32BE(0);
+                let firstReadableDataAddress = 0;
+
+                if (commandEcho === 3004) {
+                    const status = data.readInt32BE(4);
+                    if (status > 0) {
+                        // Parameter on target changed, restart parameter reading after 5 seconds
+                        this.client.end();
+                        this.client = null;
+                        return process.nextTick(
+                            function () {
+                                this.receivy.callback(new Error('heatpump busy'));
+                            }.bind(this)
+                        );
+                    } else {
+                        firstReadableDataAddress = 12;
+                    }
+                } else {
+                    firstReadableDataAddress = 8;
+                }
+                const paramCount = data.readInt32BE(firstReadableDataAddress - 4);
+                let dataCount = 0;
+                if (commandEcho === 3005) {
+                    // 8 Bit values
+                    dataCount = paramCount;
+                } else {
+                    // 32 Bit values
+                    dataCount = paramCount * 4;
+                }
+                const payload = data.slice(firstReadableDataAddress, data.length);
+
+                this.receivy.activeCommand = commandEcho;
+                this.receivy[commandEcho] = {
+                    remaining: dataCount - payload.length,
+                    payload
+                };
+            } else {
+                this.receivy[this.receivy.activeCommand] = {
+                    remaining: this.receivy[this.receivy.activeCommand].remaining - data.length,
+                    payload: Buffer.concat([this.receivy[this.receivy.activeCommand].payload, data])
+                };
+            }
+
+            if (this.receivy[this.receivy.activeCommand].remaining <= 0) {
+                process.nextTick(this._nextJob.bind(this));
+            }
         }
     }.bind(this));
 
