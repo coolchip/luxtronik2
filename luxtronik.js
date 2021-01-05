@@ -349,7 +349,6 @@ function sendData(client, data) {
 Luxtronik.prototype._nextJob = function () {
     if (this.receivy.jobs.length > 0) {
         this.receivy.activeCommand = 0;
-        //@TODO reset temp buffer
         this.dataBuffer = undefined;
         sendData(this.client, [this.receivy.jobs.shift(), 0]);
     } else {
@@ -387,7 +386,6 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
     }.bind(this));
 
     this.client.on('data', function (data) {
-        //@TODO concat buffer
         if (this.dataBuffer === undefined) {
             this.dataBuffer = data;
         } else {
