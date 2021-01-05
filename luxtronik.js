@@ -206,7 +206,7 @@ function processValues(heatpumpValues, heatpumpVisibility) {
         'LIN_UH_Soll': heatpumpValues[179],
         'LIN_HD': heatpumpValues[180],
         'LIN_ND': heatpumpValues[181],
-        'LIN_VDH_out': heatpumpValues[182]
+        'LIN_VDH_out': heatpumpValues[182],
     };
 }
 
@@ -251,11 +251,14 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'typeSerial': heatpumpParameters[874].toString().substr(0, 4) + '/' + heatpumpParameters[874].toString().substr(4) + '-' + heatpumpParameters[875].toString(16).toUpperCase(),
 
-        'returnTemperatureTargetMin': heatpumpParameters[979] / 10 // #63
+        'returnTemperatureTargetMin': heatpumpParameters[979] / 10, // #63
 
-        // "possible_temperature_hot_water_limit1": heatpumpParameters[47] / 10,
-        // "possible_temperature_hot_water_limit2": heatpumpParameters[84] / 10,
-        // "possible_temperature_hot_water_limit3": heatpumpParameters[973] / 10,
+        'temperature_hot_water_limit': heatpumpParameters[47] / 10,
+        //'possible_temperature_hot_water_limit2': heatpumpParameters[84] / 10,
+        //'possible_temperature_hot_water_limit3': heatpumpParameters[973] / 10,
+
+        'heating_system_circ_pump_voltage_nominal': heatpumpParameters[867] / 100,
+        'heating_system_circ_pump_voltage_minimal': heatpumpParameters[868] / 100,
     };
 }
 
@@ -530,8 +533,12 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: 851,
             setValue: realValue
         },
-        'analogOut2': {
-            setParameter: 157,
+        'heating_system_circ_pump_voltage_nominal': {
+            setParameter: 867,
+            setValue: utils.value2LuxtronikSetHundrethValue(realValue)
+        },
+        'heating_system_circ_pump_voltage_minimal': {
+            setParameter: 868,
             setValue: utils.value2LuxtronikSetHundrethValue(realValue)
         },
         'wrongName': {
