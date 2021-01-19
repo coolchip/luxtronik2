@@ -388,14 +388,15 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
     this.client.on('data', function (data) {
         if (this.dataBuffer === undefined) {
             this.dataBuffer = data;
-        } else {
-            this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
         }
+        else
+            if(this.dataBuffer.length === 4) {
+                this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
+            }
 
-        if (data.length > 4) {
-            data = this.dataBuffer;
-
+        if (data.length > 4 || this.receivy.activeCommand !== 0) {
             if (this.receivy.activeCommand === 0) {
+                data = this.dataBuffer;
                 const commandEcho = data.readInt32BE(0);
                 let firstReadableDataAddress = 0;
 
