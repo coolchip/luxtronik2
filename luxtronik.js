@@ -390,7 +390,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
             this.dataBuffer = data;
         }
         else
-            if(this.dataBuffer.length === 4) {
+            if (this.dataBuffer.length === 4) {
                 this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
             }
 
@@ -450,25 +450,36 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
 };
 
 Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
-    this.client = net.createConnection({
+    this.writeClient = net.createConnection({
         host: this._host,
         port: this._port
     }, function () {
         const command = 3002;
-        sendData(this.client, [command, setParameter, setValue]);
+        this.writeResponseBuffer = null;
+        sendData(this.writeClient, [command, setParameter, setValue]);
     }.bind(this));
 
-    this.client.on('error', function (error) {
+    this.writeClient.on('error', function (error) {
         process.nextTick(
             function () {
                 callback(error);
             }
         );
-        this.client.end();
-        this.client = null;
+        this.writeClient.end();
+        this.writeClient = null;
     }.bind(this));
 
-    this.client.on('data', function (data) {
+    this.writeClient.on('data', function (data) {
+        if(this.writeResponseBuffer === null) {
+            this.writeResponseBuffer = data;
+        }
+        else {
+            this.writeResponseBuffer = Buffer.concat([this.writeResponseBuffer, data]);
+        }
+        if(this.writeResponseBuffer.length < 8) {
+            return;
+        }
+        data = this.writeResponseBuffer
         const commandEcho = data.readInt32BE(0);
         let next;
         if (commandEcho !== 3002) {
@@ -486,8 +497,8 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
             };
         }
         process.nextTick(next);
-        this.client.end();
-        this.client = null;
+        this.writeClient.end();
+        this.writeClient = null;
     }.bind(this));
 };
 
