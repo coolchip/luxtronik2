@@ -14,6 +14,7 @@ https://github.com/openhab/openhab1-addons/wiki/Novelan-Luxtronic-heat-pump-bind
 * Buderus (Logamatic HMC20, HMC20 Z)
 * Nibe (AP-AW10)
 * Wolf Heiztechnik (BWL/BWS) 
+* CTA (Aeroheat AH CI 1-16iL)
 
 ## Status
 
