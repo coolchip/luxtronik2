@@ -259,6 +259,65 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'heating_system_circ_pump_voltage_nominal': heatpumpParameters[867] / 100,
         'heating_system_circ_pump_voltage_minimal': heatpumpParameters[868] / 100,
+
+        // ---- Timer table configurations ----
+
+        // Activated timer table for heating operation.
+        // Possible values: 0=week (monday-sunday), 1=5+2 (monday-friday), 2=days (mo, tue, ...)
+        'heatingOperationTimerTableSelected': heatpumpParameters[222],
+        'heatingOperationTimerTableSelectedString': utils.createTimerTableTypeString(heatpumpParameters[222]), // string representation
+        // heating operation table 0: week
+        'heatingOperationTimerTableWeek': utils.createTimerTable(heatpumpParameters, 223, 3), // 223..528
+        // heating operation table 1: 5+2
+        'heatingOperationTimerTable52MonFri': utils.createTimerTable(heatpumpParameters, 229, 3), // 229..234
+        'heatingOperationTimerTable52SatSun': utils.createTimerTable(heatpumpParameters, 235, 3), // 235..240
+        // heating operation table 2: day
+        'heatingOperationTimerTableDayMonday': utils.createTimerTable(heatpumpParameters, 241, 3), // 241..246
+        'heatingOperationTimerTableDayTuesday': utils.createTimerTable(heatpumpParameters, 247, 3), // 247..252
+        'heatingOperationTimerTableDayWednesday': utils.createTimerTable(heatpumpParameters, 253, 3), // 253..258
+        'heatingOperationTimerTableDayThursday': utils.createTimerTable(heatpumpParameters, 259, 3), // 259..264
+        'heatingOperationTimerTableDayFriday': utils.createTimerTable(heatpumpParameters, 265, 3), // 265..270
+        'heatingOperationTimerTableDaySaturday': utils.createTimerTable(heatpumpParameters, 271, 3), // 271..276
+        'heatingOperationTimerTableDaySunday': utils.createTimerTable(heatpumpParameters, 277, 3), // 277..282
+
+        // Activated timer table for hot water operation.
+        // Possible values: 0=week (monday-sunday), 1=5+2 (monday-friday), 2=days (mo, tue, ...)
+        'hotWaterOperationTimerTableSelected': heatpumpParameters[405],
+        'hotWaterOperationTimerTableSelectedString': utils.createTimerTableTypeString(heatpumpParameters[405]), // string representation
+        // hot water operation table 0: week
+        'hotWaterOperationTimerTableWeek': utils.createTimerTable(heatpumpParameters, 406, 5), // 406..415
+        // hot water operation table 1: 5+2
+        'hotWaterOperationTimerTable52MonFri': utils.createTimerTable(heatpumpParameters, 416, 5), // 416..425
+        'hotWaterOperationTimerTable52SatSun': utils.createTimerTable(heatpumpParameters, 426, 5), // 426..435
+        // hot water operation table 2: day
+        'hotWaterOperationTimerTableDayMonday': utils.createTimerTable(heatpumpParameters, 436, 5), // 436..445
+        'hotWaterOperationTimerTableDayTuesday': utils.createTimerTable(heatpumpParameters, 446, 5), // 446..455
+        'hotWaterOperationTimerTableDayWednesday': utils.createTimerTable(heatpumpParameters, 456, 5), // 456..465
+        'hotWaterOperationTimerTableDayThursday': utils.createTimerTable(heatpumpParameters, 466, 5), // 466..475
+        'hotWaterOperationTimerTableDayFriday': utils.createTimerTable(heatpumpParameters, 476, 5), // 476..485
+        'hotWaterOperationTimerTableDaySaturday': utils.createTimerTable(heatpumpParameters, 486, 5), // 486..495
+        'hotWaterOperationTimerTableDaySunday': utils.createTimerTable(heatpumpParameters, 496, 5), // 496..505
+
+        // Activated timer table for hot water circulation pump.
+        // Possible values: 0=week (monday-sunday), 1=5+2 (monday-friday), 2=days (mo, tue, ...)
+        'hotWaterCircPumpTimerTableSelected': heatpumpParameters[506],
+        'hotWaterCircPumpTimerTableSelectedString': utils.createTimerTableTypeString(heatpumpParameters[506]), // string representation
+        // hot water circulation pump table 0: week
+        'hotWaterCircPumpTimerTableWeek': utils.createTimerTable(heatpumpParameters, 507, 5), // 507..516
+        // hot water circulation pump table 1: 5+2
+        'hotWaterCircPumpTimerTable52MonFri': utils.createTimerTable(heatpumpParameters, 517, 5), // 517..526
+        'hotWaterCircPumpTimerTable52SatSun': utils.createTimerTable(heatpumpParameters, 527, 5), // 527..536
+        // hot water circulation pump table 2: day
+        'hotWaterCircPumpTimerTableDayMonday': utils.createTimerTable(heatpumpParameters, 537, 5), // 537..546
+        'hotWaterCircPumpTimerTableDayTuesday': utils.createTimerTable(heatpumpParameters, 547, 5), // 547..556
+        'hotWaterCircPumpTimerTableDayWednesday': utils.createTimerTable(heatpumpParameters, 557, 5), // 557..566
+        'hotWaterCircPumpTimerTableDayThursday': utils.createTimerTable(heatpumpParameters, 567, 5), // 567..576
+        'hotWaterCircPumpTimerTableDayFriday': utils.createTimerTable(heatpumpParameters, 577, 5), // 577..586
+        'hotWaterCircPumpTimerTableDaySaturday': utils.createTimerTable(heatpumpParameters, 587, 5), // 587..596
+        'hotWaterCircPumpTimerTableDaySunday': utils.createTimerTable(heatpumpParameters, 597, 5), // 597..606
+
+        'hotWaterCircPumpOnTime': heatpumpParameters[697],  // Time in minutes the circ pump is turned on within one cycle.
+        'hotWaterCircPumpOffTime': heatpumpParameters[698], // Time in minutes the circ pump is turned off within one cycle.
     };
 }
 
