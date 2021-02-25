@@ -129,6 +129,13 @@ module.exports = {
         '-1': 'Unbekannter Typ'
     }),
 
+
+    timerTableTypes: Object.freeze({
+        '0': 'Woche (Mo-So)',
+        '1': '5+2 (Mo-Fr, Sa-So)',
+        '2': 'Tage (Mo, Di, ...)'
+    }),
+
     errorCodes: Object.freeze({
         '701': 'Niederdruckstoerung - Bitte Inst. rufen',
         '702': 'Niederdrucksperre - RESET automatisch',

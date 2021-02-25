@@ -172,6 +172,36 @@ function limitRange(value, min, max) {
     return value;
 }
 
+function createTimerTableTypeString(value) {
+    let tableStr = ''
+
+    if (types.timerTableTypes.hasOwnProperty(value)) {
+        tableStr = types.timerTableTypes[value];
+    } else {
+        tableStr = 'unbekannt';
+    }
+
+    return tableStr;
+}
+
+function secondsToTimeString(value) {
+    const timeMilliseconds = new Date(value * 1000);
+    const timeStr = timeMilliseconds.toISOString().substr(11, 5);
+    return timeStr;
+}
+
+function createTimerTable(parameters, startindex, rows) {
+    let timerTable = [];
+
+    for(let rowindex = 0; rowindex < rows; rowindex++) {
+        timerTable.push({"on": secondsToTimeString(parameters[startindex + (rowindex * 2)]),
+                         "off": secondsToTimeString(parameters[startindex + (rowindex * 2) + 1])});
+    }
+
+    return timerTable;
+}
+
+
 module.exports = {
     createFirmwareString,
     int2ipAddress,
@@ -186,5 +216,7 @@ module.exports = {
     value2LuxtronikSetTemperatureValue,
     value2LuxtronikSetHundrethValue,
     isValidOperationMode,
-    limitRange
+    limitRange,
+    createTimerTableTypeString,
+    createTimerTable
 };
