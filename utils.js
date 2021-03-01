@@ -190,12 +190,18 @@ function secondsToTimeString(value) {
     return timeStr;
 }
 
-function createTimerTable(parameters, startindex, rows) {
+function createTimerTable(parameters, startindex, rows, swapOnOff = false) {
     let timerTable = [];
 
     for(let rowindex = 0; rowindex < rows; rowindex++) {
-        timerTable.push({"on": secondsToTimeString(parameters[startindex + (rowindex * 2)]),
-                         "off": secondsToTimeString(parameters[startindex + (rowindex * 2) + 1])});
+        let onTime = secondsToTimeString(parameters[startindex + (rowindex * 2)]);
+        let offTime = secondsToTimeString(parameters[startindex + (rowindex * 2) + 1]);
+        if(swapOnOff === true) {
+            const tmp = onTime;
+            onTime = offTime;
+            offTime = tmp;
+        }
+        timerTable.push({"on": onTime, "off": offTime});
     }
 
     return timerTable;
