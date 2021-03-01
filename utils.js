@@ -201,7 +201,7 @@ function createTimerTable(parameters, startindex, rows, swapOnOff = false) {
             onTime = offTime;
             offTime = tmp;
         }
-        timerTable.push({"on": onTime, "off": offTime});
+        timerTable.push({on: onTime, off: offTime});
     }
 
     return timerTable;
