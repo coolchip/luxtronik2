@@ -631,6 +631,7 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
     });
 
     const set = writeParameters.hasOwnProperty(parameterName) ? writeParameters[parameterName] : writeParameters.wrongName;
+
     if (typeof set.setParameter !== 'undefined') {
         const setParameter = set.setParameter;
         const setValue = set.setValue;
@@ -662,6 +663,18 @@ Luxtronik.prototype.write = function (parameterName, realValue, callback) {
         callback = function () {};
     }
     this._handleWriteCommand(parameterName, realValue, callback);
+};
+
+Luxtronik.prototype.writeRaw = function (parameterNumber, rawValue, callback) {
+    if (typeof callback === 'undefined') {
+        callback = function () {};
+    }
+
+    if((typeof parameterNumber === 'number') && (typeof rawValue === 'number')) {
+        this._startWrite(parameterNumber, rawValue, callback);
+    } else {
+        callback(new Error('RAW write operation requires parameter and value as number!'));
+    }
 };
 
 const createConnection = function (host, port) {
