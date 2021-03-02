@@ -173,7 +173,7 @@ function limitRange(value, min, max) {
 }
 
 function createTimerTableTypeString(value) {
-    let tableStr = ''
+    let tableStr = '';
 
     if (types.timerTableTypes.hasOwnProperty(value)) {
         tableStr = types.timerTableTypes[value];
@@ -191,22 +191,24 @@ function secondsToTimeString(value) {
 }
 
 function createTimerTable(parameters, startindex, rows, swapOnOff = false) {
-    let timerTable = [];
+    const timerTable = [];
 
-    for(let rowindex = 0; rowindex < rows; rowindex++) {
+    for (let rowindex = 0; rowindex < rows; rowindex++) {
         let onTime = secondsToTimeString(parameters[startindex + (rowindex * 2)]);
         let offTime = secondsToTimeString(parameters[startindex + (rowindex * 2) + 1]);
-        if(swapOnOff === true) {
+        if (swapOnOff === true) {
             const tmp = onTime;
             onTime = offTime;
             offTime = tmp;
         }
-        timerTable.push({on: onTime, off: offTime});
+        timerTable.push({
+            on: onTime,
+            off: offTime
+        });
     }
 
     return timerTable;
 }
-
 
 module.exports = {
     createFirmwareString,

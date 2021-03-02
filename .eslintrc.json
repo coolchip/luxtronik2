@@ -52,6 +52,7 @@
         "callback-return": "error",
         "global-require": "error",
         "no-mixed-operators": "off",
-        "no-prototype-builtins": "off"
+        "no-prototype-builtins": "off",
+        "comma-dangle": ["error", "never"]
     }
 }

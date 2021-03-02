@@ -206,7 +206,7 @@ function processValues(heatpumpValues, heatpumpVisibility) {
         'LIN_UH_Soll': heatpumpValues[179],
         'LIN_HD': heatpumpValues[180],
         'LIN_ND': heatpumpValues[181],
-        'LIN_VDH_out': heatpumpValues[182],
+        'LIN_VDH_out': heatpumpValues[182]
     };
 }
 
@@ -318,8 +318,8 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
         'hotWaterCircPumpTimerTableDayFriday': utils.createTimerTable(heatpumpParameters, 587, 5), // 587..596
         'hotWaterCircPumpTimerTableDaySaturday': utils.createTimerTable(heatpumpParameters, 597, 5), // 597..606
 
-        'hotWaterCircPumpOnTime': heatpumpParameters[697],  // Time in minutes the circ pump is turned on within one cycle.
-        'hotWaterCircPumpOffTime': heatpumpParameters[698], // Time in minutes the circ pump is turned off within one cycle.
+        'hotWaterCircPumpOnTime': heatpumpParameters[697], // Time in minutes the circ pump is turned on within one cycle.
+        'hotWaterCircPumpOffTime': heatpumpParameters[698] // Time in minutes the circ pump is turned off within one cycle.
     };
 }
 
@@ -449,11 +449,10 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
     this.client.on('data', function (data) {
         if (this.dataBuffer === undefined) {
             this.dataBuffer = data;
+        } else
+        if (this.dataBuffer.length === 4) {
+            this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
         }
-        else
-            if (this.dataBuffer.length === 4) {
-                this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
-            }
 
         if (data.length > 4 || this.receivy.activeCommand !== 0) {
             if (this.receivy.activeCommand === 0) {
@@ -531,16 +530,15 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
     }.bind(this));
 
     this.writeClient.on('data', function (data) {
-        if(this.writeResponseBuffer === null) {
+        if (this.writeResponseBuffer === null) {
             this.writeResponseBuffer = data;
-        }
-        else {
+        } else {
             this.writeResponseBuffer = Buffer.concat([this.writeResponseBuffer, data]);
         }
-        if(this.writeResponseBuffer.length < 8) {
+        if (this.writeResponseBuffer.length < 8) {
             return;
         }
-        data = this.writeResponseBuffer
+        data = this.writeResponseBuffer;
         const commandEcho = data.readInt32BE(0);
         let next;
         if (commandEcho !== 3002) {
@@ -670,10 +668,10 @@ Luxtronik.prototype.writeRaw = function (parameterNumber, rawValue, callback) {
         callback = function () {};
     }
 
-    if((typeof parameterNumber === 'number') && (typeof rawValue === 'number')) {
+    if ((typeof parameterNumber === 'number') && (typeof rawValue === 'number')) {
         this._startWrite(parameterNumber, rawValue, callback);
     } else {
-        callback(new Error('RAW write operation requires parameter and value as number!'));
+        return callback(new Error('RAW write operation requires parameter and value as number!'));
     }
 };
 

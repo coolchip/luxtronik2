@@ -129,7 +129,6 @@ module.exports = {
         '-1': 'Unbekannter Typ'
     }),
 
-
     timerTableTypes: Object.freeze({
         '0': 'Woche (Mo-So)',
         '1': '5+2 (Mo-Fr, Sa-So)',
