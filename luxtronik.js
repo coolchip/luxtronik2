@@ -373,7 +373,7 @@ Luxtronik.prototype._processData = function () {
             heatingStateString = 'Frostschutz (Soll 20 °C)';
         }
     } else {
-        if (types.heatingState.hasOwnProperty(values.opStateHeating)) {
+        if (Object.prototype.hasOwnProperty.call(types.heatingState, values.opStateHeating)) {
             heatingStateString = types.heatingState[values.opStateHeating];
         } else {
             heatingStateString = 'unbekannt (' + values.opStateHeating + ')';
@@ -628,7 +628,7 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         }
     });
 
-    const set = writeParameters.hasOwnProperty(parameterName) ? writeParameters[parameterName] : writeParameters.wrongName;
+    const set = Object.prototype.hasOwnProperty.call(writeParameters, parameterName) ? writeParameters[parameterName] : writeParameters.wrongName;
 
     if (typeof set.setParameter !== 'undefined') {
         const setParameter = set.setParameter;

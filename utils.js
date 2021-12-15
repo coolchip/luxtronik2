@@ -34,7 +34,7 @@ function createStateString(values) {
     const duration = values[120];
 
     // Text aus Define
-    if (types.stateMessages.hasOwnProperty(state1)) {
+    if (Object.prototype.hasOwnProperty.call(types.stateMessages, state1)) {
         stateStr = types.stateMessages[state1];
         if (state2 === 0 || state2 === 2) {
             stateStr += ' seit ';
@@ -63,7 +63,7 @@ function createExtendedStateString(values) {
     const ahpStufe = values[121];
     const ahpTemp = values[122] / 10;
 
-    if (types.extendetStateMessages.hasOwnProperty(state3)) {
+    if (Object.prototype.hasOwnProperty.call(types.extendetStateMessages, state3)) {
         stateStr = types.extendetStateMessages[state3];
         if (state3 === 6) {
             // Estrich Programm
@@ -86,7 +86,7 @@ function createExtendedStateString(values) {
 
 function createOperationStateString(state) {
     let stateStr = '';
-    if (types.hpMode.hasOwnProperty(state)) {
+    if (Object.prototype.hasOwnProperty.call(types.hpMode, state)) {
         stateStr = types.hpMode[state];
     } else {
         stateStr = 'Unknown [' + state + ']';
@@ -116,7 +116,7 @@ function createCode(time, code, codeTypes) {
     return {
         code,
         date: new Date(time * 1000),
-        message: codeTypes.hasOwnProperty(code) ? codeTypes[code] : codeTypes[-1]
+        message: Object.prototype.hasOwnProperty.call(codeTypes, code) ? codeTypes[code] : codeTypes[-1]
     };
 }
 
@@ -145,7 +145,7 @@ function toInt32ArrayReadBE(buffer) {
 }
 
 function createHeatPumptTypeString(value) {
-    return types.hpTypes.hasOwnProperty(value) ? types.hpTypes[value] : types.hpTypes[-1];
+    return Object.prototype.hasOwnProperty.call(types.hpTypes, value) ? types.hpTypes[value] : types.hpTypes[-1];
 }
 
 function value2LuxtronikSetTemperatureValue(realValue) {
@@ -159,7 +159,7 @@ function value2LuxtronikSetHundrethValue(realValue) {
 }
 
 function isValidOperationMode(value) {
-    return types.hpMode.hasOwnProperty(value.toString());
+    return Object.prototype.hasOwnProperty.call(types.hpMode, value.toString());
 }
 
 function limitRange(value, min, max) {
@@ -175,7 +175,7 @@ function limitRange(value, min, max) {
 function createTimerTableTypeString(value) {
     let tableStr = '';
 
-    if (types.timerTableTypes.hasOwnProperty(value)) {
+    if (Object.prototype.hasOwnProperty.call(types.timerTableTypes, value)) {
         tableStr = types.timerTableTypes[value];
     } else {
         tableStr = 'unbekannt';
