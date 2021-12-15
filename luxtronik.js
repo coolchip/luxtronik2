@@ -595,6 +595,10 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
             setParameter: 88,
             setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
         },
+        'temperature_hot_water_target': {
+            setParameter: 105,
+            setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
+        },
         'cooling_operation_mode': {
             setParameter: 108,
             setValue: realValue
