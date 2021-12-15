@@ -481,6 +481,17 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                 } else {
                     firstReadableDataAddress = 8;
                 }
+
+                // Do not proceed if the field for paramCount is missing
+                if(data.length < firstReadableDataAddress) {
+                    this.client.end();
+                    this.client = null;
+                    return process.nextTick(
+                        function () {
+                            this.receivy.callback(new Error('parameter count missing'));
+                        }.bind(this)
+                    );
+                }
                 const paramCount = data.readInt32BE(firstReadableDataAddress - 4);
                 let dataCount = 0;
                 if (commandEcho === 3005) {
