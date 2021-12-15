@@ -472,7 +472,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                         this.client = null;
                         return process.nextTick(
                             function () {
-                                this.receivy.callback(new Error('heatpump busy'));
+                                this.receivy.callback(new Error('heatpump busy - state: ' + status));
                             }.bind(this)
                         );
                     } else {
