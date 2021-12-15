@@ -224,6 +224,10 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
         'heating_curve_parallel_offset': (heatpumpVisibility[207] === 1) ? heatpumpParameters[12] / 10 : 'no', // #70
         'deltaHeatingReduction': heatpumpParameters[13] / 10, // #47
 
+        'mk1_curve_end_point': (heatpumpVisibility[207] === 1) ? heatpumpParameters[14] / 10 : 'no', // #69
+        'mk1_curve_parallel_offset': (heatpumpVisibility[207] === 1) ? heatpumpParameters[15] / 10 : 'no', // #70
+        'deltaMk1Reduction': heatpumpParameters[16] / 10, // #47
+
         'heatSourcedefrostAirThreshold': (heatpumpVisibility[97] === 1) ? heatpumpParameters[44] / 10 : 'no', // #71
 
         'hotWaterTemperatureHysteresis': heatpumpParameters[74] / 10, // #49
