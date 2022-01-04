@@ -328,6 +328,13 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 }
 
 Luxtronik.prototype._processData = function () {
+    // break if one of the data packages is not filled
+    if (!Object.prototype.hasOwnProperty.call(this.receivy['3003'], 'payload') ||
+        !Object.prototype.hasOwnProperty.call(this.receivy['3004'], 'payload') ||
+        !Object.prototype.hasOwnProperty.call(this.receivy['3005'], 'payload') ) {
+        return this.receivy.callback(new Error('Unexpected Data'));
+    }
+
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy['3003'].payload);
     const heatpumpValues = utils.toInt32ArrayReadBE(this.receivy['3004'].payload);
     const heatpumpVisibility = this.receivy['3005'].payload;
