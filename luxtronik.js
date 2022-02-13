@@ -328,11 +328,15 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 }
 
 Luxtronik.prototype._processData = function () {
-    // break if one of the data packages is not filled
-    if (!Object.prototype.hasOwnProperty.call(this.receivy['3003'], 'payload') ||
-        !Object.prototype.hasOwnProperty.call(this.receivy['3004'], 'payload') ||
-        !Object.prototype.hasOwnProperty.call(this.receivy['3005'], 'payload') ) {
-        return this.receivy.callback(new Error('Unexpected Data'));
+    // break if one of the data packages is missing or has no payload
+    const requiredDataFields = ['3003', '3004', '3005'];
+    for (const element of requiredDataFields) {
+        if (!Object.prototype.hasOwnProperty.call(this.receivy, element)) {
+            return this.receivy.callback(new Error('Missing element at luxtronik response to ' + element));
+        }
+        if (!Object.prototype.hasOwnProperty.call(this.receivy[element], 'payload')) {
+            return this.receivy.callback(new Error('Missing payload for element at luxtronik response to ' + element));
+        }
     }
 
     const heatpumpParameters = utils.toInt32ArrayReadBE(this.receivy['3003'].payload);
@@ -490,7 +494,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                 }
 
                 // Do not proceed if the field for paramCount is missing
-                if(data.length < firstReadableDataAddress) {
+                if (data.length < firstReadableDataAddress) {
                     this.client.end();
                     this.client = null;
                     return process.nextTick(
