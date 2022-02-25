@@ -80,6 +80,52 @@ pump.write('heating_target_temperature', 0, function (err, res) {
 
 ```
 
+### Ability to plug in to processing data
+
+It is possible to plug in to data processing by passing third option into `createConnection` function (or Luxtronik constructor). See the example below:
+
+```javascript
+const pump = luxtronik.createConnection('192.168.0.190', 8889, {
+    onProcessValues: function (heatpumpValues, heatpumpVisibility) {
+        return {
+            additional_value: (heatpumpVisibility[24] === 1) ? heatpumpValues[13] / 10 : 'no',
+        };
+    },
+    onProcessParameters: function (heatpumpParameters, heatpumpVisibility) {
+        return {
+            additional_parameter: (heatpumpVisibility[207] === 1) ? heatpumpParameters[11] / 10 : 'no',
+        };
+    },
+});
+
+pump.read(function (err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(data);
+    console.log(data.values.errors);
+});
+```
+
+Output:
+
+```json
+{
+  values: {
+    additional_value: 'no',
+    // ...regular values
+  },
+  parameters: {
+    additional_parameter: 26.5,
+    // ...regular parameters
+  }
+}
+[
+  // ...errors will go here
+]
+
+```
+
 ## Migrating to version 2.0.0
 
 The API changed between version 1.0.3 and version 2.0.0. [See migrating guide](MIGRATING.md) for information on how to migrate your application to the new API.
