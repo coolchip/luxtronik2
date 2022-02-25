@@ -10,9 +10,9 @@ const net = require('net');
 const utils = require('./utils');
 const types = require('./types');
 
-function Luxtronik(host, port) {
+function Luxtronik(host, port, options) {
     if (!(this instanceof Luxtronik)) {
-        return new Luxtronik(host, port);
+        return new Luxtronik(host, port, options);
     }
 
     if (typeof port === 'undefined') {
@@ -22,10 +22,17 @@ function Luxtronik(host, port) {
     }
     this._host = host;
     this.receivy = {};
+    this.options = options;
 }
 
 function processValues(heatpumpValues, heatpumpVisibility) {
+    let additionalValues = {};
+    if (this.options && typeof this.options.onProcessValues === 'function') {
+        additionalValues = this.options.onProcessValues(heatpumpValues, heatpumpVisibility);
+    }
+
     return {
+        ...additionalValues,
         'temperature_supply': heatpumpValues[10] / 10, // #15
         'temperature_return': heatpumpValues[11] / 10, // #16
         'temperature_target_return': heatpumpValues[12] / 10, // #17
@@ -211,7 +218,13 @@ function processValues(heatpumpValues, heatpumpVisibility) {
 }
 
 function processParameters(heatpumpParameters, heatpumpVisibility) {
+    let additionalParameters = {};
+    if (this.options && typeof this.options.onProcessParameters === 'function') {
+        additionalParameters = this.options.onProcessParameters(heatpumpParameters, heatpumpVisibility);
+    }
+
     return {
+        ...additionalParameters,
         'heating_temperature': heatpumpParameters[1] / 10, // #54 - returnTemperatureSetBack
         'warmwater_temperature': heatpumpParameters[2] / 10,
         'heating_operation_mode': heatpumpParameters[3], // #10
@@ -355,8 +368,8 @@ Luxtronik.prototype._processData = function () {
         });
     }
 
-    const values = processValues(heatpumpValues, heatpumpVisibility);
-    const parameters = processParameters(heatpumpParameters, heatpumpVisibility);
+    const values = processValues.call(this, heatpumpValues, heatpumpVisibility);
+    const parameters = processParameters.call(this, heatpumpParameters, heatpumpVisibility);
     const additional = {
         'reading_calculated_time_ms': this.receivy.readingEndTime - this.receivy.readingStartTime
     };
@@ -705,8 +718,8 @@ Luxtronik.prototype.writeRaw = function (parameterNumber, rawValue, callback) {
     }
 };
 
-const createConnection = function (host, port) {
-    return new Luxtronik(host, port);
+const createConnection = function (host, port, options) {
+    return new Luxtronik(host, port, options);
 };
 
 module.exports.createConnection = createConnection;
