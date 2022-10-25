@@ -260,6 +260,10 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'hotWaterCircPumpDeaerate': (heatpumpVisibility[167] === 1) ? heatpumpParameters[684] : 'no', // #61
 
+        'solarPumpDeaerate': (heatpumpVisibility[167] === 1) ? heatpumpParameters[688] : 'no',
+
+        'runDeaerate': (heatpumpVisibility[167] === 1) ? heatpumpParameters[158] : 'no',
+
         'heatingLimit': heatpumpParameters[699], // #11
         'thresholdHeatingLimit': heatpumpParameters[700] / 10, // #21
 
@@ -386,6 +390,14 @@ Luxtronik.prototype._processData = function () {
 
     if (parameters.hotWaterCircPumpDeaerate !== 'no') {
         parameters.hotWaterCircPumpDeaerate = parameters.hotWaterCircPumpDeaerate ? 'on' : 'off';
+    }
+
+    if (parameters.solarPumpDeaerate !== 'no') {
+        parameters.solarPumpDeaerate = parameters.solarPumpDeaerate ? 'on' : 'off';
+    }
+
+    if (parameters.runDeaerate !== 'no') {
+        parameters.runDeaerate = parameters.runDeaerate ? 'on' : 'off';
     }
 
     // Consider also heating limit
@@ -649,6 +661,18 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         'cooling_inlet_temp': {
             setParameter: 132,
             setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
+        },
+        'runDeaerate': {
+            setParameter: 158,
+            setValue: realValue
+        },
+        'hotWaterCircPumpDeaerate': {
+            setParameter: 684,
+            setValue: realValue
+        },
+        'solarPumpDeaerate': {
+            setParameter: 688,
+            setValue: realValue
         },
         'cooling_start': {
             setParameter: 850,
