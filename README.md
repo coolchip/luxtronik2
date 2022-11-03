@@ -126,6 +126,31 @@ Output:
 
 ```
 
+### read/set runDearate
+
+Note: you need to set "runDearate" directly after you set the related pump, otherwise the Lux will not start the pump!
+
+Example code:
+
+```json
+const value= 1;
+pump.write('solarPumpDeaerate', value, function (err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(data);
+    console.log("done");
+
+    pump.write('runDeaerate', value, function (err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log(data);
+        console.log("done");
+    });
+});
+```
+
 ## Migrating to version 2.0.0
 
 The API changed between version 1.0.3 and version 2.0.0. [See migrating guide](MIGRATING.md) for information on how to migrate your application to the new API.
