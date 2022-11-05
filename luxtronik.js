@@ -632,11 +632,27 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         },
         'heating_curve_end_point': {
             setParameter: 11,
-            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 20, 55))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 20, 70))
         },
         'heating_curve_parallel_offset': {
             setParameter: 12,
-            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 15, 45))
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 5, 35))
+        },
+        'deltaHeatingReduction': {
+            setParameter: 13,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, -15, 10))
+        },
+        'mk1_curve_end_point': {
+            setParameter: 14,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 20, 70))
+        },
+        'mk1_curve_parallel_offset': {
+            setParameter: 15,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 5, 35))
+        },
+        'deltaMk1Reduction': {
+            setParameter: 16,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, -15, 10))
         },
         'hotwater_temperature_hysteresis': {
             setParameter: 74,
