@@ -340,7 +340,18 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
         'hotWaterCircPumpTimerTableDaySaturday': utils.createTimerTable(heatpumpParameters, 597, 5), // 597..606
 
         'hotWaterCircPumpOnTime': heatpumpParameters[697], // Time in minutes the circ pump is turned on within one cycle.
-        'hotWaterCircPumpOffTime': heatpumpParameters[698] // Time in minutes the circ pump is turned off within one cycle.
+        'hotWaterCircPumpOffTime': heatpumpParameters[698], // Time in minutes the circ pump is turned off within one cycle.
+
+        // thermal desinfection 
+        'thermal_desinfection_on_monday': heatpumpParameters[20], 
+        'thermal_desinfection_on_tuesday': heatpumpParameters[21], 
+        'thermal_desinfection_on_wednesday': heatpumpParameters[22], 
+        'thermal_desinfection_on_thursday': heatpumpParameters[23], 
+        'thermal_desinfection_on_friday': heatpumpParameters[24], 
+        'thermal_desinfection_on_saturday': heatpumpParameters[25], 
+        'thermal_desinfection_on_sunday': heatpumpParameters[26], 
+        'thermal_desinfection_continuous_operation': heatpumpParameters[27] 
+    
     };
 }
 
