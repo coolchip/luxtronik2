@@ -247,6 +247,11 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'returnTemperatureHysteresis': (heatpumpVisibility[93] === 1) ? heatpumpParameters[88] / 10 : 'no', // #68
 
+        // Freig. 2.VD: Einstellung der minimalen Außentemperatur, von der ab der 2. Verdichter bedarfsgerecht freigegeben werden kann. Oberhalb der eingestellten Außentemperatur bleibt der 2. Verdichter gesperrt.
+        'heatingTemperatureOutside2ndCompressor': heatpumpParameters[95] / 10,
+        // Vorl 2.VD WW: Vorlauf 2. Verdichter Trinkwarmwasser Einstellung der Vorlauftemperatur, von der ab mit dem zweiten Verdichter Trinkwarmwasser bereitet wird zur Optimierung der Ladezeit und der erreichbaren Trinkwarmwassertemperaturen.
+        'hotwaterTemperatureForerun2ndCompressor': heatpumpParameters[96] / 10,
+
         'heatSourcedefrostAirEnd': (heatpumpVisibility[105] === 1) ? heatpumpParameters[98] / 10 : 'no', // #72
 
         'temperature_hot_water_target': heatpumpParameters[105] / 10,
@@ -672,6 +677,14 @@ Luxtronik.prototype._handleWriteCommand = function (parameterName, realValue, ca
         'return_temperature_hysteresis': {
             setParameter: 88,
             setValue: utils.value2LuxtronikSetTemperatureValue(realValue)
+        },
+        'heating_temperature_outside_2nd_compressor': {
+            setParameter: 95,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, -20, 30))
+        },
+        'hotwater_temperature_forerun_2nd_compressor': {
+            setParameter: 96,
+            setValue: utils.value2LuxtronikSetTemperatureValue(utils.limitRange(realValue, 10, 70))
         },
         'temperature_hot_water_target': {
             setParameter: 105,
