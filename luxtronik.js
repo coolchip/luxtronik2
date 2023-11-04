@@ -469,7 +469,7 @@ Luxtronik.prototype._nextJob = function () {
         this.dataBuffer = undefined;
         sendData(this.client, [this.receivy.jobs.shift(), 0]);
     } else {
-        this.client.end();
+        if (this.client) this.client.end();
         this.client = null;
         this.receivy.readingEndTime = Date.now();
         process.nextTick(this._processData.bind(this));
@@ -493,7 +493,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
     }.bind(this));
 
     this.client.on('error', function (error) {
-        this.client.end();
+        if (this.client) this.client.end();
         this.client = null;
         process.nextTick(
             function () {
@@ -520,7 +520,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
                     const status = data.readInt32BE(4);
                     if (status > 0) {
                         // Parameter on target changed, restart parameter reading after 5 seconds
-                        this.client.end();
+                        if (this.client) this.client.end();
                         this.client = null;
                         return process.nextTick(
                             function () {
@@ -536,7 +536,7 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
 
                 // Do not proceed if the field for paramCount is missing
                 if (data.length < firstReadableDataAddress) {
-                    this.client.end();
+                    if (this.client) this.client.end();
                     this.client = null;
                     return process.nextTick(
                         function () {
@@ -592,7 +592,7 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
                 callback(error);
             }
         );
-        this.writeClient.end();
+        if (this.writeClient) this.writeClient.end();
         this.writeClient = null;
     }.bind(this));
 
@@ -623,7 +623,7 @@ Luxtronik.prototype._startWrite = function (setParameter, setValue, callback) {
             };
         }
         process.nextTick(next);
-        this.writeClient.end();
+        if (this.writeClient) this.writeClient.end();
         this.writeClient = null;
     }.bind(this));
 };
