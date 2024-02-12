@@ -53,6 +53,12 @@ function processValues(heatpumpValues, heatpumpVisibility) {
         'temperature_solar_storage': (heatpumpVisibility[37] === 1) ? heatpumpValues[27] / 10 : 'no', // #51
         'temperature_external_source': (heatpumpVisibility[38] === 1) ? heatpumpValues[28] / 10 : 'no',
 
+        'temperature_intake_evaporation': heatpumpValues[175] / 10, // unit: °C
+        'temperature_intake_compressor1': heatpumpValues[176] / 10, // unit: °C
+        'temperature_compressor1_heating': heatpumpValues[177] / 10, // unit: °C
+        'temperature_overheating': heatpumpValues[178] / 10, // unit: Kelvin
+        'temperature_overheating_target': heatpumpValues[179] / 10, // unit: Kelvin
+
         'ASDin': heatpumpValues[29],
         'BWTin': heatpumpValues[30],
         'EVUin': heatpumpValues[31],
@@ -506,9 +512,9 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
         if (this.dataBuffer === undefined) {
             this.dataBuffer = data;
         } else
-        if (this.dataBuffer.length === 4) {
-            this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
-        }
+            if (this.dataBuffer.length === 4) {
+                this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
+            }
 
         if (data.length > 4 || this.receivy.activeCommand !== 0) {
             if (this.receivy.activeCommand === 0) {
