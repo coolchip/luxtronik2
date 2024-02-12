@@ -59,36 +59,36 @@ function processValues(heatpumpValues, heatpumpVisibility) {
         'temperature_overheating': heatpumpValues[178] / 10, // unit: Kelvin
         'temperature_overheating_target': heatpumpValues[179] / 10, // unit: Kelvin
 
-        'ASDin': heatpumpValues[29],
+        'ASDin': heatpumpValues[29], // Abtau, Soledruck, Durchfluss
         'BWTin': heatpumpValues[30],
-        'EVUin': heatpumpValues[31],
-        'HDin': heatpumpValues[32],
-        'HDin_pressure': heatpumpValues[180] / 100, // unit: bar
-        'MOTin': heatpumpValues[33],
-        'NDin': heatpumpValues[34],
-        'NDin_pressure': heatpumpValues[181] / 100, // unit: bar
-        'PEXin': heatpumpValues[35],
+        'EVUin': heatpumpValues[31], // Sperrzeit Energieversorger
+        'HDin': heatpumpValues[32], // Hochdruckpressostat, value 0: pressure OK
+        'HDin_pressure': heatpumpValues[180] / 100, // Hochdruckpressostat, unit: bar
+        'MOTin': heatpumpValues[33], // Motorschutz
+        'NDin': heatpumpValues[34], // Niederdruckpressostat, value 1: pressure OK
+        'NDin_pressure': heatpumpValues[181] / 100, // Niederdruckpressostat, unit: bar
+        'PEXin': heatpumpValues[35], // Fremdstromanode
         'SWTin': heatpumpValues[36],
 
-        'AVout': heatpumpValues[37],
-        'BUPout': heatpumpValues[38],
-        'HUPout': heatpumpValues[39],
-        'MA1out': heatpumpValues[40],
-        'MZ1out': heatpumpValues[41],
-        'VENout': heatpumpValues[42],
-        'VBOout': heatpumpValues[43],
-        'VD1out': heatpumpValues[44],
-        'VD2out': heatpumpValues[45],
-        'ZIPout': heatpumpValues[46],
-        'ZUPout': heatpumpValues[47],
-        'ZW1out': heatpumpValues[48],
-        'ZW2SSTout': heatpumpValues[49],
-        'ZW3SSTout': heatpumpValues[50],
+        'AVout': heatpumpValues[37],  // Abtauventil / Kreislaufumkehr
+        'BUPout': heatpumpValues[38], // Warmwasserumwälzpumpe
+        'HUPout': heatpumpValues[39], // Heizungsumwälzpumpe
+        'MA1out': heatpumpValues[40], // Mischer 1 auf
+        'MZ1out': heatpumpValues[41], // Mischer 1 zu
+        'VENout': heatpumpValues[42], // Ventilator Wärmepumpengehäuse
+        'VBOout': heatpumpValues[43], // Ventil BOSUP: Ventilator-, Brunnen- oder Soleumwälzpumpe
+        'VD1out': heatpumpValues[44], // Verdichter/Kompressor 1
+        'VD2out': heatpumpValues[45], // Verdichter/Kompressor 2
+        'ZIPout': heatpumpValues[46], // Zirkulationspumpe
+        'ZUPout': heatpumpValues[47], // Zusatzumwälzpumpe
+        'ZW1out': heatpumpValues[48], // Zweiter Wärmeerzeuger 1
+        'ZW2SSTout': heatpumpValues[49], // Zweiter Wärmeerzeuger 2 - Sammelstörung
+        'ZW3SSTout': heatpumpValues[50], // Zweiter Wärmeerzeuger 3 - Sammelstörung
         'FP2out': heatpumpValues[51],
         'SLPout': heatpumpValues[52],
         'SUPout': heatpumpValues[53],
-        'MZ2out': heatpumpValues[54],
-        'MA2out': heatpumpValues[55],
+        'MZ2out': heatpumpValues[54], // Mischer 2 zu
+        'MA2out': heatpumpValues[55], // Mischer 2 auf
 
         'defrostValve': (heatpumpVisibility[47] === 1) ? heatpumpValues[37] : 'no', // #67
         'hotWaterBoilerValve': heatpumpValues[38], // #9
