@@ -63,8 +63,10 @@ function processValues(heatpumpValues, heatpumpVisibility) {
         'BWTin': heatpumpValues[30],
         'EVUin': heatpumpValues[31],
         'HDin': heatpumpValues[32],
+        'HDin_pressure': heatpumpValues[180] / 100, // unit: bar
         'MOTin': heatpumpValues[33],
         'NDin': heatpumpValues[34],
+        'NDin_pressure': heatpumpValues[181] / 100, // unit: bar
         'PEXin': heatpumpValues[35],
         'SWTin': heatpumpValues[36],
 
@@ -512,9 +514,9 @@ Luxtronik.prototype._startRead = function (rawdata, callback) {
         if (this.dataBuffer === undefined) {
             this.dataBuffer = data;
         } else
-            if (this.dataBuffer.length === 4) {
-                this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
-            }
+        if (this.dataBuffer.length === 4) {
+            this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
+        }
 
         if (data.length > 4 || this.receivy.activeCommand !== 0) {
             if (this.receivy.activeCommand === 0) {
