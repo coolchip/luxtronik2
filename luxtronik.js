@@ -287,6 +287,12 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
 
         'returnTemperatureTargetMin': heatpumpParameters[979] / 10, // #63
 
+        'temperature_supply_limit': heatpumpParameters[149] / 10, // unit °C
+        'temperature_return_limit': heatpumpParameters[87] / 10, // unit °C
+        'temperature_outdoor_max': heatpumpParameters[91] / 10, // unit °C
+        'temperature_outdoor_min': heatpumpParameters[92] / 10, // unit °C
+        'temperature_ZWE_possible': heatpumpParameters[90] / 10, // unit °C
+
         'temperature_hot_water_limit': heatpumpParameters[47] / 10,
         //'possible_temperature_hot_water_limit2': heatpumpParameters[84] / 10,
         //'possible_temperature_hot_water_limit3': heatpumpParameters[973] / 10,
@@ -355,16 +361,16 @@ function processParameters(heatpumpParameters, heatpumpVisibility) {
         'hotWaterCircPumpOnTime': heatpumpParameters[697], // Time in minutes the circ pump is turned on within one cycle.
         'hotWaterCircPumpOffTime': heatpumpParameters[698], // Time in minutes the circ pump is turned off within one cycle.
 
-        // thermal desinfection 
-        'thermal_desinfection_on_monday': heatpumpParameters[20], 
-        'thermal_desinfection_on_tuesday': heatpumpParameters[21], 
-        'thermal_desinfection_on_wednesday': heatpumpParameters[22], 
-        'thermal_desinfection_on_thursday': heatpumpParameters[23], 
-        'thermal_desinfection_on_friday': heatpumpParameters[24], 
-        'thermal_desinfection_on_saturday': heatpumpParameters[25], 
-        'thermal_desinfection_on_sunday': heatpumpParameters[26], 
-        'thermal_desinfection_continuous_operation': heatpumpParameters[27] 
-    
+        // thermal desinfection
+        'thermal_desinfection_on_monday': heatpumpParameters[20],
+        'thermal_desinfection_on_tuesday': heatpumpParameters[21],
+        'thermal_desinfection_on_wednesday': heatpumpParameters[22],
+        'thermal_desinfection_on_thursday': heatpumpParameters[23],
+        'thermal_desinfection_on_friday': heatpumpParameters[24],
+        'thermal_desinfection_on_saturday': heatpumpParameters[25],
+        'thermal_desinfection_on_sunday': heatpumpParameters[26],
+        'thermal_desinfection_continuous_operation': heatpumpParameters[27]
+
     };
 }
 
