@@ -21,7 +21,6 @@ https://github.com/openhab/openhab1-addons/wiki/Novelan-Luxtronic-heat-pump-bind
 | Category         | Status                                                                                                                    |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Version          | [![npm version](https://badge.fury.io/js/luxtronik2.svg)](https://badge.fury.io/js/luxtronik2)                            |
-| Build            | [![Build Status](https://travis-ci.org/coolchip/luxtronik2.svg?branch=master)](https://travis-ci.org/coolchip/luxtronik2) |
 | License          | [![npm](https://img.shields.io/npm/l/express.svg)](https://www.npmjs.com/package/luxtronik2)                              |
 ## Installation
 
@@ -108,7 +107,7 @@ pump.read(function (err, data) {
 
 Output:
 
-```json
+```javascript
 {
   values: {
     additional_value: 'no',
@@ -131,7 +130,7 @@ Note: you need to set "runDearate" directly after you set the related pump, othe
 
 Example code:
 
-```json
+```javascript
 const value= 1;
 pump.write('solarPumpDeaerate', value, function (err, data) {
     if (err) {
