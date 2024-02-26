@@ -4,7 +4,7 @@ const humanizeduration = require('humanize-duration');
 const huminizeoptions = {
     language: 'de',
     conjunction: ' und ',
-    serialComma: false
+    serialComma: false,
 };
 
 const types = require('./types');
@@ -13,7 +13,7 @@ function createFirmwareString(buf) {
     let firmware = '';
     for (const key in buf) {
         if ({}.hasOwnProperty.call(buf, key)) {
-            firmware += (buf[key] === 0) ? '' : String.fromCharCode(buf[key]);
+            firmware += buf[key] === 0 ? '' : String.fromCharCode(buf[key]);
         }
     }
     return firmware;
@@ -21,9 +21,9 @@ function createFirmwareString(buf) {
 
 function int2ipAddress(value) {
     const part1 = value & 255;
-    const part2 = ((value >> 8) & 255);
-    const part3 = ((value >> 16) & 255);
-    const part4 = ((value >> 24) & 255);
+    const part2 = (value >> 8) & 255;
+    const part3 = (value >> 16) & 255;
+    const part4 = (value >> 24) & 255;
     return part4 + '.' + part3 + '.' + part2 + '.' + part1;
 }
 
@@ -116,7 +116,7 @@ function createCode(time, code, codeTypes) {
     return {
         code,
         date: new Date(time * 1000),
-        message: Object.prototype.hasOwnProperty.call(codeTypes, code) ? codeTypes[code] : codeTypes[-1]
+        message: Object.prototype.hasOwnProperty.call(codeTypes, code) ? codeTypes[code] : codeTypes[-1],
     };
 }
 
@@ -194,8 +194,8 @@ function createTimerTable(parameters, startindex, rows, swapOnOff = false) {
     const timerTable = [];
 
     for (let rowindex = 0; rowindex < rows; rowindex++) {
-        let onTime = secondsToTimeString(parameters[startindex + (rowindex * 2)]);
-        let offTime = secondsToTimeString(parameters[startindex + (rowindex * 2) + 1]);
+        let onTime = secondsToTimeString(parameters[startindex + rowindex * 2]);
+        let offTime = secondsToTimeString(parameters[startindex + rowindex * 2 + 1]);
         if (swapOnOff === true) {
             const tmp = onTime;
             onTime = offTime;
@@ -203,7 +203,7 @@ function createTimerTable(parameters, startindex, rows, swapOnOff = false) {
         }
         timerTable.push({
             on: onTime,
-            off: offTime
+            off: offTime,
         });
     }
 
@@ -226,5 +226,5 @@ module.exports = {
     isValidOperationMode,
     limitRange,
     createTimerTableTypeString,
-    createTimerTable
+    createTimerTable,
 };
